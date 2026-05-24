@@ -15,7 +15,7 @@
     "license": "MIT",
     "description": "Tree-sitter grammar for Graphcal (.gcl)",
     "links": {
-      "repository": "https://github.com/shunichironomura/graphcal"
+      "repository": "https://github.com/graphcal-lang/tree-sitter-graphcal"
     }
   }
 }
