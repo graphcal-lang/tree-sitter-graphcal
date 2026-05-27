@@ -1169,7 +1169,7 @@
       },
       "value": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "binary_expr",
@@ -5017,7 +5017,7 @@
     },
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "field_init",
