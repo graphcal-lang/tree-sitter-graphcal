@@ -1,25 +1,31 @@
 {
   "name": "tree-sitter-graphcal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tree-sitter grammar for Graphcal (.gcl)",
+  "keywords": [
+    "graphcal",
+    "parser",
+    "tree-sitter"
+  ],
   "license": "MIT",
   "main": "bindings/node",
-  "keywords": ["tree-sitter", "parser", "graphcal"],
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "parse": "tree-sitter parse"
+  },
   "dependencies": {
     "nan": "^2.20.0"
   },
   "devDependencies": {
     "tree-sitter-cli": "0.26.9"
   },
-  "scripts": {
-    "generate": "tree-sitter generate",
-    "test": "tree-sitter test",
-    "parse": "tree-sitter parse"
-  },
   "tree-sitter": [
     {
       "scope": "source.graphcal",
-      "file-types": ["gcl"],
+      "file-types": [
+        "gcl"
+      ],
       "highlights": "queries/highlights.scm",
       "injection-regex": "^(graphcal|gcl)$"
     }
