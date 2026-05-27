@@ -936,25 +936,29 @@ module.exports = grammar({
     ),
 
     match_pattern: $ => choice(
-      // Qualified variant pattern for index match: Maneuver.Departure
-      seq(
-        field("index", $.identifier),
-        ".",
-        field("variant", $.identifier),
-      ),
-      // Bare constructor pattern for type match: Variant(bindings)
-      seq(
-        field("variant", $.identifier),
+      $.index_label_pattern,
+      $.constructor_pattern,
+    ),
+
+    // Qualified, fieldless index-label pattern: Maneuver.Departure
+    index_label_pattern: $ => seq(
+      field("index", $.identifier),
+      ".",
+      field("variant", $.identifier),
+    ),
+
+    // Bare type-constructor pattern: Variant(bindings)
+    constructor_pattern: $ => seq(
+      field("constructor", $.identifier),
+      optional(seq(
+        "(",
         optional(seq(
-          "(",
-          optional(seq(
-            $.pattern_binding,
-            repeat(seq(",", $.pattern_binding)),
-            optional(","),
-          )),
-          ")",
+          $.pattern_binding,
+          repeat(seq(",", $.pattern_binding)),
+          optional(","),
         )),
-      ),
+        ")",
+      )),
     ),
 
     pattern_binding: $ => choice(

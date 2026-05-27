@@ -250,8 +250,11 @@
 ; Match expressions
 ; ---------------------------------------------------------------
 
-; Match pattern variant name: Impulsive(...) =>
-(match_pattern variant: (identifier) @type)
+; Match constructor pattern: Impulsive(...) =>
+(constructor_pattern constructor: (identifier) @type)
+
+; Match index-label pattern: Maneuver.Departure =>
+(index_label_pattern index: (identifier) @type variant: (identifier) @constant)
 
 ; Wildcard pattern: _
 (wildcard) @variable.builtin
