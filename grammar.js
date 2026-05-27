@@ -916,7 +916,7 @@ module.exports = grammar({
       field("else", $.brace_body),
     )),
 
-    // match @maneuver { Impulsive(delta_v) => ..., Coasting => ... }
+    // match @maneuver { Impulsive(delta_v: dv) => ..., Coasting => ... }
     match_expr: $ => seq(
       "match",
       field("scrutinee", choice(
@@ -984,10 +984,8 @@ module.exports = grammar({
     pattern_binding: $ => choice(
       // field_name: _  (wildcard)
       seq(field("name", $.identifier), ":", $.wildcard),
-      // field_name: var_name  (rename)
+      // field_name: var_name  (bind field to variable)
       seq(field("name", $.identifier), ":", field("binding", $.identifier)),
-      // field_name  (shorthand: bind to same name)
-      field("name", $.identifier),
     ),
 
     wildcard: $ => "_",

@@ -256,8 +256,7 @@
 ; Wildcard pattern: _
 (wildcard) @variable.builtin
 
-; Pattern binding name (shorthand): { thrust }
-; Pattern binding with rename: { name: binding }
+; Pattern field binding: name: binding or name: _
 (pattern_binding name: (identifier) @property)
 
 ; ---------------------------------------------------------------
