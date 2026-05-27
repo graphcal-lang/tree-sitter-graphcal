@@ -250,7 +250,7 @@
 ; Match expressions
 ; ---------------------------------------------------------------
 
-; Match pattern variant name: Impulsive { ... } =>
+; Match pattern variant name: Impulsive(...) =>
 (match_pattern variant: (identifier) @type)
 
 ; Wildcard pattern: _

@@ -4688,7 +4688,7 @@
                   "members": [
                     {
                       "type": "STRING",
-                      "value": "{"
+                      "value": "("
                     },
                     {
                       "type": "CHOICE",
@@ -4737,7 +4737,7 @@
                     },
                     {
                       "type": "STRING",
-                      "value": "}"
+                      "value": ")"
                     }
                   ]
                 },
