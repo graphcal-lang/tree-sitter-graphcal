@@ -225,7 +225,7 @@
 ; Struct and index usage
 ; ---------------------------------------------------------------
 
-; Struct construction: TransferResult { ... }
+; Struct construction: TransferResult(field: expr, ...)
 (struct_construction type: (identifier) @type)
 
 ; Field access: @transfer.dv1
@@ -234,7 +234,7 @@
 ; Field declarations in type: dv1: Velocity
 (field_declaration name: (identifier) @property)
 
-; Field init shorthand/explicit: dv1, dv1: expr
+; Field initializer: dv1: expr
 (field_init name: (identifier) @property)
 
 ; Qualified variant: Maneuver.Departure

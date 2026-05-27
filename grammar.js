@@ -26,9 +26,6 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   conflicts: $ => [
-    // `identifier {` could be a struct_construction or a bare identifier
-    // followed by a brace body (e.g., in `if condition { ... }`).
-    [$._primary_expr, $.struct_construction],
     // `identifier < type_expr` could be fn_call turbofish or struct_construction type args.
     [$.generic_arg, $.struct_construction],
     // The first slot of a multi_decl is indistinguishable from a
@@ -1235,7 +1232,7 @@ module.exports = grammar({
       field("output", $.identifier),
     ),
 
-    // TransferResult { dv1, dv2: a + b, total_dv: dv1 + dv2 }
+    // TransferResult(dv1: @dv1, dv2: a + b, total_dv: dv1 + dv2)
     struct_construction: $ => seq(
       field("type", $.identifier),
       optional(seq(
@@ -1245,24 +1242,17 @@ module.exports = grammar({
         optional(","),
         ">",
       )),
-      "{",
-      optional(seq(
-        $.field_init,
-        repeat(seq(",", $.field_init)),
-        optional(","),
-      )),
-      "}",
+      "(",
+      $.field_init,
+      repeat(seq(",", $.field_init)),
+      optional(","),
+      ")",
     ),
 
-    field_init: $ => choice(
-      // Explicit: field_name: expr
-      seq(
-        field("name", $.identifier),
-        ":",
-        field("value", $._expr),
-      ),
-      // Shorthand: field_name
+    field_init: $ => seq(
       field("name", $.identifier),
+      ":",
+      field("value", $._expr),
     ),
 
     // { Maneuver.Departure: 2.46 km/s, ... }
