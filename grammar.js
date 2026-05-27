@@ -919,19 +919,11 @@ module.exports = grammar({
     // match @maneuver { Impulsive(delta_v: dv) => ..., Coasting => ... }
     match_expr: $ => seq(
       "match",
-      field("scrutinee", choice(
-        $._expr,
-        seq(
-          "(",
-          field("tuple_scrutinee", $._expr),
-          repeat1(seq(",", field("tuple_scrutinee", $._expr))),
-          ")",
-        ),
-      )),
+      field("scrutinee", $._expr),
       "{",
       optional(seq(
-        choice($.match_arm, $.tuple_match_arm),
-        repeat(seq(",", choice($.match_arm, $.tuple_match_arm))),
+        $.match_arm,
+        repeat(seq(",", $.match_arm)),
         optional(","),
       )),
       "}",
@@ -939,12 +931,6 @@ module.exports = grammar({
 
     match_arm: $ => seq(
       field("pattern", $.match_pattern),
-      "=>",
-      field("body", $._expr),
-    ),
-
-    tuple_match_arm: $ => seq(
-      field("pattern", $.tuple_match_pattern),
       "=>",
       field("body", $._expr),
     ),
@@ -968,16 +954,6 @@ module.exports = grammar({
           )),
           ")",
         )),
-      ),
-    ),
-
-    tuple_match_pattern: $ => choice(
-      "_",
-      seq(
-        "(",
-        field("value", $._expr),
-        repeat1(seq(",", field("value", $._expr))),
-        ")",
       ),
     ),
 
