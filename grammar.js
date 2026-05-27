@@ -919,7 +919,7 @@ module.exports = grammar({
       field("else", $.brace_body),
     )),
 
-    // match @maneuver { Impulsive { delta_v } => ..., Coasting => ... }
+    // match @maneuver { Impulsive(delta_v) => ..., Coasting => ... }
     match_expr: $ => seq(
       "match",
       field("scrutinee", choice(
@@ -959,17 +959,17 @@ module.exports = grammar({
         ".",
         field("variant", $.identifier),
       ),
-      // Bare variant pattern for tagged union match: Variant { bindings }
+      // Bare constructor pattern for type match: Variant(bindings)
       seq(
         field("variant", $.identifier),
         optional(seq(
-          "{",
+          "(",
           optional(seq(
             $.pattern_binding,
             repeat(seq(",", $.pattern_binding)),
             optional(","),
           )),
-          "}",
+          ")",
         )),
       ),
     ),
