@@ -26,8 +26,6 @@ module.exports = grammar({
   word: $ => $.identifier,
 
   conflicts: $ => [
-    // `identifier < type_expr` could be fn_call turbofish or struct_construction type args.
-    [$.generic_arg, $.struct_construction],
     // The first slot of a multi_decl is indistinguishable from a
     // param/node/const-node declaration up through the end of the type
     // annotation. The disambiguator is the trailing `,`.
@@ -49,7 +47,8 @@ module.exports = grammar({
     // distinguishes them (variant when LHS is a known index, otherwise
     // a qualified const). Both parses are accepted by the GLR parser
     // and any downstream consumer reads `qualified_variant` when present.
-    [$.qualified_variant, $._primary_expr],
+    [$.ident_path, $.qualified_variant],
+    [$.ident_path, $.qualified_variant, $.fn_call, $.struct_construction],
   ],
 
   rules: {
@@ -180,8 +179,8 @@ module.exports = grammar({
     multi_table_expr: $ => seq(
       "table",
       "[",
-      field("shared_axis", choice($.identifier, $.nat_literal)),
-      repeat(seq(",", field("shared_axis", choice($.identifier, $.nat_literal)))),
+      field("shared_axis", choice($.ident_path, $.nat_literal)),
+      repeat(seq(",", field("shared_axis", choice($.ident_path, $.nat_literal)))),
       ",",
       field("slot_tuple", $.slot_tuple),
       "]",
@@ -198,7 +197,7 @@ module.exports = grammar({
       ")",
     ),
 
-    slot_axis_entry: $ => choice("_", $.identifier),
+    slot_axis_entry: $ => choice("_", $.ident_path),
 
     multi_table_body: $ => choice(
       repeat1($.multi_slice_section),
@@ -524,6 +523,12 @@ module.exports = grammar({
       repeat(seq(".", $.identifier)),
     ),
 
+    // Source identifier path preserved before semantic namespace resolution.
+    ident_path: $ => prec.left(PREC.CALL, seq(
+      $.identifier,
+      repeat(seq(".", $.identifier)),
+    )),
+
     // Import item with optional namespace marker, alias, and optional
     // `pub` re-export marker: name, type Name, pub type Name as Alias.
     import_item: $ => seq(
@@ -776,11 +781,11 @@ module.exports = grammar({
 
     domain_bound_key: _$ => choice("min", "max"),
 
-    // Generic type application: Vec3<Length, ECI>
+    // Generic type application: Vec3<Length, ECI>, module.Vec3<Length>
     // Uses dynamic precedence to prefer type_application over parsing `<` as
-    // a comparison operator when an identifier is followed by `<` in type context.
+    // a comparison operator when an identifier path is followed by `<` in type context.
     type_application: $ => prec.dynamic(2, seq(
-      field("name", $.identifier),
+      field("name", $.ident_path),
       "<",
       field("type_arg", $.type_expr),
       repeat(seq(",", field("type_arg", $.type_expr))),
@@ -806,7 +811,7 @@ module.exports = grammar({
     _index_expr: $ => choice(
       $.nat_add_expr,
       $.nat_mul_expr,
-      $.identifier,
+      $.ident_path,
       $.nat_literal,
     ),
 
@@ -837,7 +842,7 @@ module.exports = grammar({
     )),
 
     dim_term: $ => prec.right(PREC.POWER + 1, choice(
-      seq($.identifier, optional(seq("^", $.number))),
+      seq($.ident_path, optional(seq("^", $.number))),
       seq("(", $.dim_expr, ")", optional(seq("^", $.number))),
     )),
 
@@ -935,21 +940,11 @@ module.exports = grammar({
       field("body", $._expr),
     ),
 
-    match_pattern: $ => choice(
-      $.index_label_pattern,
-      $.constructor_pattern,
-    ),
-
-    // Qualified, fieldless index-label pattern: Maneuver.Departure
-    index_label_pattern: $ => seq(
-      field("index", $.identifier),
-      ".",
-      field("variant", $.identifier),
-    ),
-
-    // Bare type-constructor pattern: Variant(bindings)
-    constructor_pattern: $ => seq(
-      field("constructor", $.identifier),
+    // Constructor and index-label patterns are both syntactic paths here.
+    // Name resolution decides whether `module.Pick(...)` is a constructor
+    // or whether `module.Phase.Burn` is an index label.
+    match_pattern: $ => seq(
+      field("path", $.ident_path),
       optional(seq(
         "(",
         optional(seq(
@@ -990,7 +985,7 @@ module.exports = grammar({
     for_binding: $ => seq(
       field("var", $.identifier),
       ":",
-      field("index", choice($.identifier, $.range_expr)),
+      field("index", choice($.ident_path, $.range_expr)),
     ),
 
     // range(N) expression in for bindings
@@ -1033,14 +1028,14 @@ module.exports = grammar({
       ")",
     ),
 
-    // Table expression: table[Index1, Index2] { ... }
+    // Table expression: table[Index1, module.Index2] { ... }
     // Syntax sugar for map literals with spreadsheet-like layout.
-    // Index specs are named identifiers or integer literals (Nat range).
+    // Index specs are named identifier paths or integer literals (Nat range).
     table_expr: $ => seq(
       "table",
       "[",
-      field("index", choice($.identifier, $.nat_literal)),
-      repeat(seq(",", field("index", choice($.identifier, $.nat_literal)))),
+      field("index", choice($.ident_path, $.nat_literal)),
+      repeat(seq(",", field("index", choice($.ident_path, $.nat_literal)))),
       "]",
       "{",
       $.table_body,
@@ -1092,16 +1087,25 @@ module.exports = grammar({
       ";",
     ),
 
-    // Postfix expressions: field access, index access, function calls
+    // Postfix expressions: calls, field access, and index access.
     _postfix_expr: $ => choice(
+      $.fn_call,
+      $.struct_construction,
       $.field_access,
       $.index_access,
-      $.fn_call,
       $._primary_expr,
     ),
 
     field_access: $ => prec.left(PREC.POSTFIX, seq(
-      field("object", $._expr),
+      field("object", choice(
+        $.graph_ref,
+        $.inline_dag_call,
+        $.fn_call,
+        $.struct_construction,
+        $.index_access,
+        $.parenthesized_expr,
+        $.field_access,
+      )),
       ".",
       field("field", $.identifier),
     )),
@@ -1116,19 +1120,18 @@ module.exports = grammar({
 
     index_arg: $ => $._expr,
 
-    // Maneuver.Departure
-    qualified_variant: $ => seq(
-      field("index", $.identifier),
-      ".",
-      field("variant", $.identifier),
-    ),
+    // Maneuver.Departure or module.Maneuver.Departure.
+    qualified_variant: $ => prec.left(seq(
+      field("path", $.identifier),
+      repeat1(seq(".", field("path", $.identifier))),
+    )),
 
-    // Function call: a bare identifier (`f(args)` or `f<T>(args)`).
-    // There are no user-defined functions in graphcal, so qualified
-    // `module.fn(args)` does not exist — bare built-ins (`sqrt`,
-    // `sum`, …) are the only callable form.
+    // Function or constructor call. Bare and qualified callees share the
+    // same syntactic path shape; argument form and semantic resolution decide
+    // whether this is a built-in function call or constructor call.
     fn_call: $ => prec(PREC.CALL, seq(
       field("name", $.identifier),
+      repeat(seq(".", field("path_segment", $.identifier))),
       optional(seq(
         "<",
         field("generic_arg", $.generic_arg),
@@ -1165,11 +1168,10 @@ module.exports = grammar({
       $.unit_literal,
       $.graph_ref,
       $.inline_dag_call,
-      $.struct_construction,
       $.map_literal,
       $.parenthesized_expr,
       $.qualified_variant,
-      $.identifier,
+      $.ident_path,
     ),
 
     // Unit-annotated literal: 400 km, 9.80665 m/s^2
@@ -1210,9 +1212,10 @@ module.exports = grammar({
       field("output", $.identifier),
     ),
 
-    // TransferResult(dv1: @dv1, dv2: a + b, total_dv: dv1 + dv2)
-    struct_construction: $ => seq(
+    // TransferResult(dv1: @dv1, dv2: a + b) or module.TransferResult(...)
+    struct_construction: $ => prec(PREC.CALL, seq(
       field("type", $.identifier),
+      repeat(seq(".", field("path_segment", $.identifier))),
       optional(seq(
         "<",
         field("type_arg", $.type_expr),
@@ -1225,7 +1228,7 @@ module.exports = grammar({
       repeat(seq(",", $.field_init)),
       optional(","),
       ")",
-    ),
+    )),
 
     field_init: $ => seq(
       field("name", $.identifier),

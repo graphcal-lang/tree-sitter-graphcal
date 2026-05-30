@@ -36,7 +36,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -243,7 +243,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -337,7 +337,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -442,7 +442,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -623,32 +623,6 @@
     }
   },
   {
-    "type": "constructor_pattern",
-    "named": true,
-    "fields": {
-      "constructor": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "pattern_binding",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "convert_expr",
     "named": true,
     "fields": {
@@ -695,7 +669,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -872,7 +846,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -965,7 +939,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -1062,18 +1036,6 @@
         "required": true,
         "types": [
           {
-            "type": "binary_expr",
-            "named": true
-          },
-          {
-            "type": "boolean",
-            "named": true
-          },
-          {
-            "type": "convert_expr",
-            "named": true
-          },
-          {
             "type": "field_access",
             "named": true
           },
@@ -1082,19 +1044,7 @@
             "named": true
           },
           {
-            "type": "for_expr",
-            "named": true
-          },
-          {
             "type": "graph_ref",
-            "named": true
-          },
-          {
-            "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "if_expr",
             "named": true
           },
           {
@@ -1106,47 +1056,11 @@
             "named": true
           },
           {
-            "type": "map_literal",
-            "named": true
-          },
-          {
-            "type": "match_expr",
-            "named": true
-          },
-          {
-            "type": "number",
-            "named": true
-          },
-          {
             "type": "parenthesized_expr",
             "named": true
           },
           {
-            "type": "qualified_variant",
-            "named": true
-          },
-          {
-            "type": "scan_expr",
-            "named": true
-          },
-          {
             "type": "struct_construction",
-            "named": true
-          },
-          {
-            "type": "table_expr",
-            "named": true
-          },
-          {
-            "type": "unary_expr",
-            "named": true
-          },
-          {
-            "type": "unfold_expr",
-            "named": true
-          },
-          {
-            "type": "unit_literal",
             "named": true
           }
         ]
@@ -1226,7 +1140,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -1389,7 +1303,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -1490,6 +1404,16 @@
             "named": true
           }
         ]
+      },
+      "path_segment": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
       }
     },
     "children": {
@@ -1525,7 +1449,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -1596,7 +1520,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -1654,7 +1578,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -1829,6 +1753,21 @@
     }
   },
   {
+    "type": "ident_path",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "if_expr",
     "named": true,
     "fields": {
@@ -1865,7 +1804,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2165,7 +2104,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2280,7 +2219,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2390,7 +2329,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -2499,7 +2438,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2603,7 +2542,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2697,7 +2636,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -2775,32 +2714,6 @@
     }
   },
   {
-    "type": "index_label_pattern",
-    "named": true,
-    "fields": {
-      "index": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "variant": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "indexed_type",
     "named": true,
     "fields": {
@@ -2844,7 +2757,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -3008,7 +2921,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3133,7 +3046,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3283,7 +3196,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3393,7 +3306,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3469,17 +3382,24 @@
   {
     "type": "match_pattern",
     "named": true,
-    "fields": {},
+    "fields": {
+      "path": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ident_path",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": false,
-      "required": true,
+      "multiple": true,
+      "required": false,
       "types": [
         {
-          "type": "constructor_pattern",
-          "named": true
-        },
-        {
-          "type": "index_label_pattern",
+          "type": "pattern_binding",
           "named": true
         }
       ]
@@ -3547,7 +3467,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3788,7 +3708,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -3960,7 +3880,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4094,7 +4014,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4208,7 +4128,7 @@
           "named": true
         },
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         },
         {
@@ -4395,7 +4315,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4462,18 +4382,8 @@
     "type": "qualified_variant",
     "named": true,
     "fields": {
-      "index": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "variant": {
-        "multiple": false,
+      "path": {
+        "multiple": true,
         "required": true,
         "types": [
           {
@@ -4555,7 +4465,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4649,7 +4559,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4743,7 +4653,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -4825,7 +4735,7 @@
       "required": false,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_path",
           "named": true
         }
       ]
@@ -4919,6 +4829,16 @@
     "type": "struct_construction",
     "named": true,
     "fields": {
+      "path_segment": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
       "type": {
         "multiple": false,
         "required": true,
@@ -5017,7 +4937,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5089,7 +5009,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5220,7 +5140,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5314,7 +5234,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5408,7 +5328,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5518,7 +5438,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5590,7 +5510,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -5654,7 +5574,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5856,7 +5776,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -5970,7 +5890,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {
@@ -6074,7 +5994,7 @@
             "named": true
           },
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           },
           {

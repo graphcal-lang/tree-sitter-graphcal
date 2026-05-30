@@ -157,8 +157,9 @@
 ; Types in annotations
 ; ---------------------------------------------------------------
 
-; Indexed type index names: Velocity[Maneuver], Mass[Phase, Maneuver]
-(indexed_type (identifier) @type)
+; Type applications and indexed type index names: module.Vec3<Length>, Velocity[module.Maneuver]
+(type_application name: (ident_path (identifier) @type))
+(indexed_type (ident_path (identifier) @type))
 
 ; Domain constraint names: min, max in Type(min: expr, max: expr)
 (type_constraint name: (domain_bound_key) @attribute)
@@ -175,8 +176,8 @@
 ; Generic parameter names: D, I
 (generic_param name: (identifier) @type)
 
-; Dimension terms in type annotations (Length, Time, Mass, etc.)
-(dim_term (identifier) @type)
+; Dimension terms in type annotations (Length, module.Time, Mass, etc.)
+(dim_term (ident_path (identifier) @type))
 
 ; Unit terms in unit expressions
 (unit_term (identifier) @type)
@@ -186,9 +187,9 @@
 ; ---------------------------------------------------------------
 
 
-; fn calls: sqrt(x), ln(x). Built-in only — graphcal has no
-; user-defined functions, so qualified `module.fn(...)` does not exist.
+; fn/constructor calls: sqrt(x), Pick(...), module.Pick(...).
 (fn_call name: (identifier) @function.call)
+(fn_call path_segment: (identifier) @function.call)
 
 ; ---------------------------------------------------------------
 ; Graph references: @name, @dag(args).out, @module.dag(args).out
@@ -225,8 +226,9 @@
 ; Struct and index usage
 ; ---------------------------------------------------------------
 
-; Struct construction: TransferResult(field: expr, ...)
+; Struct construction: TransferResult(field: expr, ...) or module.TransferResult(...)
 (struct_construction type: (identifier) @type)
+(struct_construction path_segment: (identifier) @type)
 
 ; Field access: @transfer.dv1
 (field_access field: (identifier) @property)
@@ -237,8 +239,9 @@
 ; Field initializer: dv1: expr
 (field_init name: (identifier) @property)
 
-; Qualified variant: Maneuver.Departure
-(qualified_variant index: (identifier) @type variant: (identifier) @constant)
+; Qualified variant: Maneuver.Departure or module.Maneuver.Departure.
+; The parser preserves the full path; semantic resolution decides owner vs leaf.
+(qualified_variant path: (identifier) @constant)
 
 ; Tagged-union constructor names: type Foo { A(...), B }
 (constructor_declaration name: (identifier) @type)
@@ -250,11 +253,8 @@
 ; Match expressions
 ; ---------------------------------------------------------------
 
-; Match constructor pattern: Impulsive(...) =>
-(constructor_pattern constructor: (identifier) @type)
-
-; Match index-label pattern: Maneuver.Departure =>
-(index_label_pattern index: (identifier) @type variant: (identifier) @constant)
+; Match pattern path: Impulsive(...) =>, Maneuver.Departure =>, module.Pick(...) =>
+(match_pattern path: (ident_path (identifier) @type))
 
 ; Wildcard pattern: _
 (wildcard) @variable.builtin
@@ -266,7 +266,7 @@
 ; For comprehension
 ; ---------------------------------------------------------------
 
-(for_binding var: (identifier) @variable index: (identifier) @type)
+(for_binding var: (identifier) @variable index: (ident_path (identifier) @type))
 
 ; ---------------------------------------------------------------
 ; Scan expression
@@ -347,8 +347,8 @@
 ; Table expressions
 ; ---------------------------------------------------------------
 
-; Index names in table[Index1, Index2]: highlighted as types
-(table_expr index: (identifier) @type)
+; Index names in table[Index1, module.Index2]: highlighted as types
+(table_expr index: (ident_path (identifier) @type))
 
 ; Column headers in table header row: highlighted as index variants
 (table_header_row column: (identifier) @constant)
@@ -358,12 +358,12 @@
 
 ; Multi-decl (issue #481) surface form — mirror single-decl highlights.
 
-; Shared axis names in table[I1, I2, ..., (slots)]: highlighted as types
-(multi_table_expr shared_axis: (identifier) @type)
+; Shared axis names in table[I1, module.I2, ..., (slots)]: highlighted as types
+(multi_table_expr shared_axis: (ident_path (identifier) @type))
 
-; Extra-axis names inside the slot tuple `(_, _, ExtraAxis)`: highlighted
+; Extra-axis names inside the slot tuple `(_, _, module.ExtraAxis)`: highlighted
 ; as types. (`_` placeholders are a literal token, not an identifier.)
-(slot_axis_entry (identifier) @type)
+(slot_axis_entry (ident_path (identifier) @type))
 
 ; Header-row cells that are bare variant identifiers: index variants.
 ; (`_` placeholders are a literal token; qualified `Axis.Variant` is
