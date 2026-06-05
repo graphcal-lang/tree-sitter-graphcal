@@ -3,13 +3,14 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: '(\.snap|\.gcl)$'
       - id: end-of-file-fixer
+        exclude: '^src/(grammar|node-types)\.json$'
       - id: check-toml
       - id: check-yaml
       - id: check-json
       - id: check-added-large-files
         args: [--enforce-all]
+        exclude: '^src/parser\.c$'
       - id: check-merge-conflict
       - id: check-symlinks
       - id: mixed-line-ending
