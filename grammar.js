@@ -847,7 +847,7 @@ module.exports = grammar({
     )),
 
     // ---------------------------------------------------------------
-    // Unit expressions: m, m/s^2, kg * m / s^2
+    // Unit expressions: m, m/s^2, kg * m / s^2, u.mile
     // ---------------------------------------------------------------
 
     unit_expr: $ => prec.right(PREC.MUL + 1, seq(
@@ -855,8 +855,16 @@ module.exports = grammar({
       repeat(seq(choice("*", "/"), $.unit_term)),
     )),
 
+    // A unit reference is a bare IDENT (local declaration, selective
+    // import, or prelude unit) or `alias.unit` for a `pub` unit of a
+    // module imported with an alias. Module aliases are single segments,
+    // so at most one qualifier is allowed (per grammar.ebnf `unit_term`).
     unit_term: $ => prec.right(PREC.POWER + 1, choice(
-      seq($.identifier, optional(seq("^", $.number))),
+      seq(
+        optional(seq(field("module", $.identifier), ".")),
+        field("name", $.identifier),
+        optional(seq("^", $.number)),
+      ),
       seq("(", $.unit_expr, ")", optional(seq("^", $.number))),
     )),
 

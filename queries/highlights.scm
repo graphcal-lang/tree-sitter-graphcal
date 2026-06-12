@@ -179,8 +179,10 @@
 ; Dimension terms in type annotations (Length, module.Time, Mass, etc.)
 (dim_term (ident_path (identifier) @type))
 
-; Unit terms in unit expressions
-(unit_term (identifier) @type)
+; Unit terms in unit expressions: the leaf is the unit, an optional
+; single qualifier is a module alias (u.mile)
+(unit_term name: (identifier) @type)
+(unit_term module: (identifier) @module)
 
 ; ---------------------------------------------------------------
 ; Function calls and definitions
