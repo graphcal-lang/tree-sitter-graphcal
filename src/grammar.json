@@ -209,7 +209,24 @@
         },
         {
           "type": "SYMBOL",
+          "name": "attribute_range_step"
+        },
+        {
+          "type": "SYMBOL",
           "name": "attribute_group"
+        }
+      ]
+    },
+    "attribute_range_step": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "#"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "nat_literal"
         }
       ]
     },

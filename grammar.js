@@ -98,11 +98,17 @@ module.exports = grammar({
       "]",
     ),
 
-    // An attribute argument: a path (ident or ident.ident.ident...) or a group ((arg, arg, ...))
+    // An attribute argument: a path (ident or ident.ident.ident...), a
+    // `#N` Nat-range key, or a group ((arg, arg, ...))
     _attribute_arg: $ => choice(
       $.attribute_path,
+      $.attribute_range_step,
       $.attribute_group,
     ),
+
+    // Key for a Nat range axis (e.g. `#[expected_fail(#2)]`), matching
+    // the `#N` slice-label syntax that `table` expressions use.
+    attribute_range_step: $ => seq("#", $.nat_literal),
 
     attribute_path: $ => seq(
       $.identifier,

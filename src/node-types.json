@@ -172,6 +172,10 @@
         {
           "type": "attribute_path",
           "named": true
+        },
+        {
+          "type": "attribute_range_step",
+          "named": true
         }
       ]
     }
@@ -191,6 +195,10 @@
         {
           "type": "attribute_path",
           "named": true
+        },
+        {
+          "type": "attribute_range_step",
+          "named": true
         }
       ]
     }
@@ -205,6 +213,21 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_range_step",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "nat_literal",
           "named": true
         }
       ]
