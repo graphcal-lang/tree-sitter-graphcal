@@ -1,0 +1,167 @@
+================================================================================
+Struct construction with explicit generic arguments
+================================================================================
+
+param pos_eci: Vec3<Length, Eci> = Vec3<Length, Eci>(x: 6878.0 km, y: 0.0 km, z: 0.0 km);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (type_application
+        (ident_path
+          (identifier))
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))))
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))))))
+    (struct_construction
+      (identifier)
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier))))))))
+
+================================================================================
+Struct construction with a single generic argument
+================================================================================
+
+param pos3_default: Pos3<Length> = Pos3<Length>(x: 10.0 km, y: 20.0 km, z: 30.0 km);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (type_application
+        (ident_path
+          (identifier))
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))))))
+    (struct_construction
+      (identifier)
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier)))))
+      (field_init
+        (identifier)
+        (unit_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (identifier))))))))
+
+================================================================================
+Function call with turbofish generic arguments
+================================================================================
+
+node y: D = smooth<Length>(@x, 5);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (fn_call
+      (identifier)
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (graph_ref
+        (identifier))
+      (number))))
+
+================================================================================
+Comparison chain is not misread as turbofish
+================================================================================
+
+node lt: Bool = @x < @y;
+node gt: Bool = @m > 2.0 kg;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (graph_ref
+        (identifier))
+      (graph_ref
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (graph_ref
+        (identifier))
+      (unit_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (identifier)))))))

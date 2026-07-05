@@ -49,6 +49,19 @@ module.exports = grammar({
     // and any downstream consumer reads `qualified_variant` when present.
     [$.ident_path, $.qualified_variant],
     [$.ident_path, $.qualified_variant, $.fn_call, $.struct_construction],
+    // `IDENT < …` in expression position is either a comparison (reduce
+    // the `IDENT` to `ident_path`) or the start of a turbofish generic
+    // argument list (`Vec3<Length, Eci>(x: …)`, `f<Dimensionless>(x)`).
+    // The GLR parser keeps both alive; the turbofish branch carries
+    // dynamic precedence so it wins when both parses complete (the
+    // reference grammar's comparisons are non-chaining, so the chained
+    // `(a < b) > (c)` reading is never the intended one).
+    [$.ident_path, $.fn_call, $.struct_construction],
+    // Inside a turbofish, a completed type argument reduces to
+    // `generic_arg` on the fn_call branch while the struct_construction
+    // branch shifts the following `,`/`>` directly. Keep both alive; the
+    // argument list after `(` disambiguates (field_init vs expr).
+    [$.generic_arg, $.struct_construction],
   ],
 
   rules: {
@@ -591,7 +604,14 @@ module.exports = grammar({
     ),
 
     // Source identifier path preserved before semantic namespace resolution.
-    ident_path: $ => prec.left(PREC.CALL, seq(
+    //
+    // Deliberately *not* left-associative: at `IDENT` with lookahead `<`
+    // the reduce to `ident_path` (comparison reading) and the shift into
+    // a fn_call/struct_construction turbofish must stay an unresolved
+    // conflict so the GLR parser forks (see `conflicts`). With prec.left
+    // the tie at PREC.CALL was resolved statically in favor of the
+    // reduce, killing `Vec3<Length, Eci>(x: ...)` in expression position.
+    ident_path: $ => prec(PREC.CALL, seq(
       $.identifier,
       repeat(seq(".", $.identifier)),
     )),
@@ -1235,13 +1255,17 @@ module.exports = grammar({
     fn_call: $ => prec(PREC.CALL, seq(
       field("name", $.identifier),
       repeat(seq(".", field("path_segment", $.identifier))),
-      optional(seq(
+      // The turbofish carries dynamic precedence so that when both the
+      // call reading and the (non-chaining in the reference grammar)
+      // chained-comparison reading of `f<T>(...)` complete, GLR picks
+      // the call.
+      optional(prec.dynamic(2, seq(
         "<",
         field("generic_arg", $.generic_arg),
         repeat(seq(",", field("generic_arg", $.generic_arg))),
         optional(","),
         ">",
-      )),
+      ))),
       "(",
       optional(seq(
         $._expr,
@@ -1251,11 +1275,15 @@ module.exports = grammar({
       ")",
     )),
 
-    // A generic argument in turbofish position: either a type or a nat literal
-    generic_arg: $ => choice(
+    // A generic argument in turbofish position: either a type or a nat
+    // literal. Carries PREC.CALL so the reduce to `generic_arg` inside a
+    // fn_call turbofish ties with (instead of statically losing to) the
+    // parallel struct_construction turbofish's shift of `,`/`>` — the
+    // tie is declared as a GLR conflict below.
+    generic_arg: $ => prec(PREC.CALL, choice(
       $.type_expr,
       $.number,
-    ),
+    )),
 
     // Primary expressions.
     //
@@ -1320,13 +1348,14 @@ module.exports = grammar({
     struct_construction: $ => prec(PREC.CALL, seq(
       field("type", $.identifier),
       repeat(seq(".", field("path_segment", $.identifier))),
-      optional(seq(
+      // Dynamic precedence mirrors fn_call's turbofish (see there).
+      optional(prec.dynamic(2, seq(
         "<",
         field("type_arg", $.type_expr),
         repeat(seq(",", field("type_arg", $.type_expr))),
         optional(","),
         ">",
-      )),
+      ))),
       "(",
       $.field_init,
       repeat(seq(",", $.field_init)),
