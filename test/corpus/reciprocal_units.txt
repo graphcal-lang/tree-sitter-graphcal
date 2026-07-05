@@ -1,0 +1,46 @@
+================================================================================
+Reciprocal unit shorthand in conversion target
+================================================================================
+
+node per_minute: Frequency = @f -> 1/min;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (convert_expr
+      (graph_ref
+        (identifier))
+      (unit_expr
+        (unit_term
+          (identifier))))))
+
+================================================================================
+Reciprocal unit shorthand in unit declaration
+================================================================================
+
+const unit per_min: Frequency = (1.0 / 60.0) 1/s;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (unit_declaration
+    (identifier)
+    (dim_expr
+      (dim_term
+        (ident_path
+          (identifier))))
+    (unit_def
+      (parenthesized_expr
+        (binary_expr
+          (number)
+          (number)))
+      (unit_expr
+        (unit_term
+          (identifier))))))
