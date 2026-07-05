@@ -933,7 +933,11 @@ module.exports = grammar({
     // Unit expressions: m, m/s^2, kg * m / s^2, u.mile
     // ---------------------------------------------------------------
 
+    // The optional `1/` prefix is the reciprocal shorthand (e.g. `1/min`);
+    // the literal `1` numerator contributes nothing and only `1` is
+    // allowed there (per grammar.ebnf `unit_expr`).
     unit_expr: $ => prec.right(PREC.MUL + 1, seq(
+      optional(seq("1", "/")),
       $.unit_term,
       repeat(seq(choice("*", "/"), $.unit_term)),
     )),
