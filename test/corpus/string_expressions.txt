@@ -1,0 +1,84 @@
+================================================================================
+String literal in expression position
+================================================================================
+
+param label: Dimensionless = 1.0;
+plot values = {
+    mark: point,
+    title: "Values Squared",
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (number))
+  (plot_declaration
+    (identifier)
+    (mark_field
+      (mark_type))
+    (plot_field
+      (identifier)
+      (string_literal))))
+
+================================================================================
+String literal as function call argument
+================================================================================
+
+param launch: Datetime = datetime("2026-01-15T12:00:00Z");
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (datetime_type))
+    (fn_call
+      (identifier)
+      (string_literal))))
+
+================================================================================
+Timezone display conversion target
+================================================================================
+
+node launch_tokyo: Datetime = @launch -> "Asia/Tokyo";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (datetime_type))
+    (convert_expr
+      (graph_ref
+        (identifier))
+      (string_literal))))
+
+================================================================================
+Datetime type application
+================================================================================
+
+param t_tt: Datetime<TT> = epoch("2024-11-05T12:00:00", TT);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (datetime_type
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))))))
+    (fn_call
+      (identifier)
+      (string_literal)
+      (ident_path
+        (identifier)))))

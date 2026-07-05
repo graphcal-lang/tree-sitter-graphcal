@@ -857,7 +857,19 @@ module.exports = grammar({
     dimensionless: $ => "Dimensionless",
     bool_type: $ => "Bool",
     int_type: $ => "Int",
-    datetime_type: $ => "Datetime",
+    // Bare `Datetime` (= Datetime<UTC>) or the built-in parameterized
+    // form `Datetime<TT>`. The reference parser keeps this separate from
+    // `type_application` (whose head is an `ident_path`, not a keyword).
+    datetime_type: $ => seq(
+      "Datetime",
+      optional(seq(
+        "<",
+        field("type_arg", $.type_expr),
+        repeat(seq(",", field("type_arg", $.type_expr))),
+        optional(","),
+        ">",
+      )),
+    ),
 
     // Indexed type: Velocity[Maneuver], Dimensionless[3, 4], D[M, N]
     indexed_type: $ => seq(
@@ -963,11 +975,13 @@ module.exports = grammar({
       $._postfix_expr,
     ),
 
-    // Conversion: expr -> unit_expr
+    // Conversion: expr -> unit_expr, or timezone display conversion:
+    // expr -> "Asia/Tokyo" (a string literal target selects the
+    // timezone-display form, matching the reference parser).
     convert_expr: $ => prec.left(PREC.CONVERT, seq(
       field("value", $._expr),
       "->",
-      field("target", $.unit_expr),
+      field("target", choice($.unit_expr, $.string_literal)),
     )),
 
     binary_expr: $ => choice(
@@ -1244,6 +1258,7 @@ module.exports = grammar({
     _primary_expr: $ => choice(
       $.number,
       $.boolean,
+      $.string_literal,
       $.unit_literal,
       $.graph_ref,
       $.inline_dag_call,
