@@ -34,6 +34,18 @@ jobs:
       - name: Run corpus tests
         run: npm test
 
+      - name: Checkout graphcal fixtures
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          repository: graphcal-lang/graphcal
+          path: graphcal
+          persist-credentials: false
+
+      # Guard against grammar gaps accumulating silently (issue #31):
+      # every valid fixture in the main repo must parse without errors.
+      - name: Parse all valid fixtures from graphcal
+        run: npx tree-sitter parse --quiet 'graphcal/tests/fixtures/valid/**/*.gcl'
+
       # - name: Validate highlight query
       #   working-directory: tree-sitter-graphcal
       #   run: tree-sitter query queries/highlights.scm ../tests/fixtures/invalid/functions.gcl > /dev/null
