@@ -71,6 +71,7 @@ module.exports = grammar({
       $.type_declaration,
 
       $.index_declaration,
+      $.plugin_import_declaration,
       $.import_declaration,
       $.include_declaration,
       $.dag_declaration,
@@ -431,6 +432,66 @@ module.exports = grammar({
     _import_tail: $ => choice(
       seq("as", field("alias", $.identifier)),
       $.brace_import_list,
+    ),
+
+    // import plugin "plugins/coolprop.wasm" as fluids {
+    //     fn density(p: Pressure, t: Temperature) -> Density;
+    //     fn smooth<D>(x: D, window: Dimensionless) -> D;
+    // }
+    //
+    // Extern-function declarations (issue graphcal#943, Phase A). The
+    // alias is mandatory — extern functions are only callable qualified
+    // through it — and there is no `pub` form and no trailing `;`.
+    //
+    // `plugin` is a contextual keyword in the reference parser: `import`
+    // selects this form only when followed by the identifier `plugin`
+    // *and* a string literal, so `import plugin.tools as t;` stays an
+    // ordinary module import. The keyword slot is therefore spelled
+    // `alias($.identifier, "plugin")` rather than a literal token —
+    // a literal would win keyword extraction over `identifier` after
+    // `import` and break module paths whose first segment is `plugin`.
+    // The string literal in second position is what disambiguates.
+    plugin_import_declaration: $ => seq(
+      "import",
+      alias($.identifier, "plugin"),
+      field("path", $.string_literal),
+      "as",
+      field("alias", $.identifier),
+      "{",
+      repeat($.extern_fn_declaration),
+      "}",
+    ),
+
+    // fn geometric_mean<D1, D2>(x: D1, y: D2) -> D1^(1/2) * D2^(1/2);
+    extern_fn_declaration: $ => seq(
+      "fn",
+      field("name", $.identifier),
+      optional($.extern_dim_var_binders),
+      "(",
+      optional(seq(
+        $.extern_fn_param,
+        repeat(seq(",", $.extern_fn_param)),
+        optional(","),
+      )),
+      ")",
+      "->",
+      field("result", $.type_expr),
+      ";",
+    ),
+
+    // Dimension-variable binders: <D>, <D1, D2>
+    extern_dim_var_binders: $ => seq(
+      "<",
+      $.identifier,
+      repeat(seq(",", $.identifier)),
+      optional(","),
+      ">",
+    ),
+
+    extern_fn_param: $ => seq(
+      field("name", $.identifier),
+      ":",
+      field("type", $.type_expr),
     ),
 
     brace_import_list: $ => seq(
@@ -842,9 +903,19 @@ module.exports = grammar({
     )),
 
     dim_term: $ => prec.right(PREC.POWER + 1, choice(
-      seq($.ident_path, optional(seq("^", $.number))),
-      seq("(", $.dim_expr, ")", optional(seq("^", $.number))),
+      seq($.ident_path, optional(seq("^", $.exponent))),
+      seq("(", $.dim_expr, ")", optional(seq("^", $.exponent))),
     )),
+
+    // Exponent on a dim/unit term: an integer (`^2`, `^-1`) or a
+    // parenthesized rational (`^(1/2)`, `^(-1/2)`), per grammar.ebnf
+    // `exponent`. Shared by dimension and unit expressions.
+    exponent: $ => choice(
+      $.signed_integer,
+      seq("(", $.signed_integer, optional(seq("/", $.signed_integer)), ")"),
+    ),
+
+    signed_integer: $ => /-?[0-9][0-9_]*/,
 
     // ---------------------------------------------------------------
     // Unit expressions: m, m/s^2, kg * m / s^2, u.mile
@@ -863,9 +934,9 @@ module.exports = grammar({
       seq(
         optional(seq(field("module", $.identifier), ".")),
         field("name", $.identifier),
-        optional(seq("^", $.number)),
+        optional(seq("^", $.exponent)),
       ),
-      seq("(", $.unit_expr, ")", optional(seq("^", $.number))),
+      seq("(", $.unit_expr, ")", optional(seq("^", $.exponent))),
     )),
 
     // Unit definition in unit declaration: 1000 m, 1 kg * m / s^2
