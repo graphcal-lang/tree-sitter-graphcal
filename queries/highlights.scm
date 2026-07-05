@@ -36,10 +36,15 @@
   "layer"
   "table"
   "pub"
+  "fn"
 ] @keyword
 
 ; `bind` inside a `pub(bind)` annotation.
 (visibility "bind" @keyword)
+
+; `plugin` is a contextual keyword: the grammar aliases the identifier
+; in `import plugin "…"` to an anonymous "plugin" node.
+(plugin_import_declaration "plugin" @keyword)
 
 ; ---------------------------------------------------------------
 ; Literals
@@ -47,6 +52,10 @@
 
 (number) @number
 (boolean) @boolean
+(string_literal) @string
+
+; Integer/rational exponents on dim and unit terms: ^2, ^-1, ^(1/2)
+(signed_integer) @number
 
 ; ---------------------------------------------------------------
 ; Operators
@@ -216,6 +225,17 @@
 
 ; import nasa.rocket as alias;
 (import_declaration alias: (identifier) @module)
+
+; ---------------------------------------------------------------
+; Plugin imports and extern functions (issue graphcal#943)
+; ---------------------------------------------------------------
+
+; import plugin "graphcal:demo" as demo { fn lerp<D>(a: D, ...) -> D; }
+(plugin_import_declaration path: (string_literal) @string)
+(plugin_import_declaration alias: (identifier) @module)
+(extern_fn_declaration name: (identifier) @function)
+(extern_dim_var_binders (identifier) @type)
+(extern_fn_param name: (identifier) @variable.parameter)
 
 ; include nasa.rocket(args) as alias;
 (include_declaration alias: (identifier) @module)

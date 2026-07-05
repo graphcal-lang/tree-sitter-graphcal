@@ -31,6 +31,9 @@ jobs:
       - name: Regenerate parser
         run: npm run generate
 
+      - name: Run corpus tests
+        run: npm test
+
       # - name: Validate highlight query
       #   working-directory: tree-sitter-graphcal
       #   run: tree-sitter query queries/highlights.scm ../tests/fixtures/invalid/functions.gcl > /dev/null

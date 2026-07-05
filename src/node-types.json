@@ -804,6 +804,10 @@
           "named": true
         },
         {
+          "type": "plugin_import_declaration",
+          "named": true
+        },
+        {
           "type": "type_declaration",
           "named": true
         },
@@ -846,11 +850,11 @@
           "named": true
         },
         {
-          "type": "ident_path",
+          "type": "exponent",
           "named": true
         },
         {
-          "type": "number",
+          "type": "ident_path",
           "named": true
         }
       ]
@@ -1015,6 +1019,102 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "exponent",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "signed_integer",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "extern_dim_var_binders",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "extern_fn_declaration",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "result": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_expr",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "extern_dim_var_binders",
+          "named": true
+        },
+        {
+          "type": "extern_fn_param",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "extern_fn_param",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "type_expr",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -4379,6 +4479,42 @@
     }
   },
   {
+    "type": "plugin_import_declaration",
+    "named": true,
+    "fields": {
+      "alias": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "path": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "string_literal",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "extern_fn_declaration",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "qualified_variant",
     "named": true,
     "fields": {
@@ -4812,6 +4948,10 @@
         },
         {
           "type": "plot_declaration",
+          "named": true
+        },
+        {
+          "type": "plugin_import_declaration",
           "named": true
         },
         {
@@ -6214,7 +6354,7 @@
       "required": false,
       "types": [
         {
-          "type": "number",
+          "type": "exponent",
           "named": true
         },
         {
@@ -6450,6 +6590,10 @@
     "named": false
   },
   {
+    "type": "fn",
+    "named": false
+  },
+  {
     "type": "for",
     "named": false
   },
@@ -6527,6 +6671,10 @@
     "named": false
   },
   {
+    "type": "plugin",
+    "named": false
+  },
+  {
     "type": "point",
     "named": false
   },
@@ -6547,8 +6695,16 @@
     "named": false
   },
   {
+    "type": "signed_integer",
+    "named": true
+  },
+  {
     "type": "step",
     "named": false
+  },
+  {
+    "type": "string_literal",
+    "named": true
   },
   {
     "type": "table",
