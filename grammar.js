@@ -455,7 +455,7 @@ module.exports = grammar({
 
     // import plugin "plugins/coolprop.wasm" as fluids {
     //     fn density(p: Pressure, t: Temperature) -> Density;
-    //     fn smooth<D>(x: D, window: Dimensionless) -> D;
+    //     fn smooth<D: Dim, I: Index>(xs: D[I], window: Dimensionless) -> D[I];
     // }
     //
     // Extern-function declarations (issue graphcal#943, Phase A). The
@@ -481,11 +481,11 @@ module.exports = grammar({
       "}",
     ),
 
-    // fn geometric_mean<D1, D2>(x: D1, y: D2) -> D1^(1/2) * D2^(1/2);
+    // fn geometric_mean<D1: Dim, D2: Dim>(x: D1, y: D2) -> D1^(1/2) * D2^(1/2);
     extern_fn_declaration: $ => seq(
       "fn",
       field("name", $.identifier),
-      optional($.extern_dim_var_binders),
+      optional($.extern_generic_binders),
       "(",
       optional(seq(
         $.extern_fn_param,
@@ -498,13 +498,24 @@ module.exports = grammar({
       ";",
     ),
 
-    // Dimension-variable binders: <D>, <D1, D2>
-    extern_dim_var_binders: $ => seq(
+    // Generic binders: <D: Dim>, <D1: Dim, D2: Dim>, <D: Dim, I: Index>
+    //
+    // Same `name: constraint` form as `generic_params`, restricted to
+    // `Dim` and `Index` (no `Nat`/`Type`, no defaults). The constraint is
+    // aliased to `generic_constraint` so it gets the same node name (and
+    // highlighting) as constraints in `type` declarations.
+    extern_generic_binders: $ => seq(
       "<",
-      $.identifier,
-      repeat(seq(",", $.identifier)),
+      $.extern_generic_binder,
+      repeat(seq(",", $.extern_generic_binder)),
       optional(","),
       ">",
+    ),
+
+    extern_generic_binder: $ => seq(
+      field("name", $.identifier),
+      ":",
+      field("constraint", alias(choice("Dim", "Index"), $.generic_constraint)),
     ),
 
     extern_fn_param: $ => seq(

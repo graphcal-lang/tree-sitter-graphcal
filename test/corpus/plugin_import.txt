@@ -3,9 +3,9 @@ Plugin import with extern function declarations
 ================================================================================
 
 import plugin "graphcal:demo" as demo {
-    fn lerp<D>(a: D, b: D, t: Dimensionless) -> D;
-    fn inverse<D>(x: D) -> D^-1;
-    fn geometric_mean<D1, D2>(x: D1, y: D2) -> D1^(1/2) * D2^(1/2);
+    fn lerp<D: Dim>(a: D, b: D, t: Dimensionless) -> D;
+    fn inverse<D: Dim>(x: D) -> D^-1;
+    fn geometric_mean<D1: Dim, D2: Dim>(x: D1, y: D2) -> D1^(1/2) * D2^(1/2);
 }
 
 --------------------------------------------------------------------------------
@@ -16,8 +16,10 @@ import plugin "graphcal:demo" as demo {
     (identifier)
     (extern_fn_declaration
       (identifier)
-      (extern_dim_var_binders
-        (identifier))
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
       (extern_fn_param
         (identifier)
         (type_expr
@@ -43,8 +45,10 @@ import plugin "graphcal:demo" as demo {
               (identifier))))))
     (extern_fn_declaration
       (identifier)
-      (extern_dim_var_binders
-        (identifier))
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
       (extern_fn_param
         (identifier)
         (type_expr
@@ -61,9 +65,13 @@ import plugin "graphcal:demo" as demo {
               (signed_integer))))))
     (extern_fn_declaration
       (identifier)
-      (extern_dim_var_binders
-        (identifier)
-        (identifier))
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint))
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
       (extern_fn_param
         (identifier)
         (type_expr
@@ -156,6 +164,92 @@ import plugin "plugins/coolprop.wasm" as fluids {
           (dimensionless)))
       (type_expr
         (int_type)))))
+
+================================================================================
+Extern function with index binder, array types, and record result
+================================================================================
+
+import plugin "graphcal:demo" as demo {
+    fn smooth<D: Dim, I: Index>(xs: D[I], window: Dimensionless) -> D[I];
+    fn resample<I: Index>(xs: Velocity[I]) -> Velocity[I];
+    fn plan(dv: Velocity) -> DvSpan;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (plugin_import_declaration
+    (string_literal)
+    (identifier)
+    (extern_fn_declaration
+      (identifier)
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint))
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (indexed_type
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))
+            (ident_path
+              (identifier)))))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (dimensionless)))
+      (type_expr
+        (indexed_type
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))
+          (ident_path
+            (identifier)))))
+    (extern_fn_declaration
+      (identifier)
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (indexed_type
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))
+            (ident_path
+              (identifier)))))
+      (type_expr
+        (indexed_type
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))
+          (ident_path
+            (identifier)))))
+    (extern_fn_declaration
+      (identifier)
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier))))))))
 
 ================================================================================
 Module import whose first segment is spelled plugin

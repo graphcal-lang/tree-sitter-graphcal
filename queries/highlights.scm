@@ -230,11 +230,14 @@
 ; Plugin imports and extern functions (issue graphcal#943)
 ; ---------------------------------------------------------------
 
-; import plugin "graphcal:demo" as demo { fn lerp<D>(a: D, ...) -> D; }
+; import plugin "graphcal:demo" as demo { fn lerp<D: Dim>(a: D, ...) -> D; }
+; Binder constraints (`Dim`/`Index`) are aliased to `generic_constraint`
+; in the grammar, so the `(generic_constraint) @type.builtin` rule above
+; covers them.
 (plugin_import_declaration path: (string_literal) @string)
 (plugin_import_declaration alias: (identifier) @module)
 (extern_fn_declaration name: (identifier) @function)
-(extern_dim_var_binders (identifier) @type)
+(extern_generic_binder name: (identifier) @type)
 (extern_fn_param name: (identifier) @variable.parameter)
 
 ; include nasa.rocket(args) as alias;
