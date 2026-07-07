@@ -1104,21 +1104,6 @@
     }
   },
   {
-    "type": "extern_dim_var_binders",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "extern_fn_declaration",
     "named": true,
     "fields": {
@@ -1148,11 +1133,11 @@
       "required": false,
       "types": [
         {
-          "type": "extern_dim_var_binders",
+          "type": "extern_fn_param",
           "named": true
         },
         {
-          "type": "extern_fn_param",
+          "type": "extern_generic_binders",
           "named": true
         }
       ]
@@ -1182,6 +1167,47 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "extern_generic_binder",
+    "named": true,
+    "fields": {
+      "constraint": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "generic_constraint",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "extern_generic_binders",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "extern_generic_binder",
+          "named": true
+        }
+      ]
     }
   },
   {

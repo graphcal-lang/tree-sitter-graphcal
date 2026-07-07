@@ -1952,7 +1952,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "extern_dim_var_binders"
+              "name": "extern_generic_binders"
             },
             {
               "type": "BLANK"
@@ -2030,7 +2030,7 @@
         }
       ]
     },
-    "extern_dim_var_binders": {
+    "extern_generic_binders": {
       "type": "SEQ",
       "members": [
         {
@@ -2039,7 +2039,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "identifier"
+          "name": "extern_generic_binder"
         },
         {
           "type": "REPEAT",
@@ -2052,7 +2052,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "identifier"
+                "name": "extern_generic_binder"
               }
             ]
           }
@@ -2072,6 +2072,45 @@
         {
           "type": "STRING",
           "value": ">"
+        }
+      ]
+    },
+    "extern_generic_binder": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "constraint",
+          "content": {
+            "type": "ALIAS",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "Dim"
+                },
+                {
+                  "type": "STRING",
+                  "value": "Index"
+                }
+              ]
+            },
+            "named": true,
+            "value": "generic_constraint"
+          }
         }
       ]
     },
