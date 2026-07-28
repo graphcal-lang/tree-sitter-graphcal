@@ -1,0 +1,181 @@
+================================================================================
+Contextual spellings are ordinary identifiers outside special productions
+================================================================================
+
+param scan: Dimensionless = 1.0;
+node unfold: Dimensionless = scan;
+node ratio: Dimensionless = scan / unfold;
+unit step: Dimensionless = 1.0 linspace;
+index linspace = { step };
+import scan.unfold.{linspace as step};
+type scan<unfold: Type> { scan(step: unfold) }
+param value: scan<unfold>[linspace];
+node ordinary: Dimensionless = plugin.scan(1.0);
+node generic: Dimensionless = scan<Length>();
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (number))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (ident_path
+      (identifier)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (binary_expr
+      (ident_path
+        (identifier))
+      (ident_path
+        (identifier))))
+  (unit_declaration
+    (identifier)
+    (dim_expr
+      (dim_term
+        (ident_path
+          (identifier))))
+    (unit_def
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier)))))
+  (index_declaration
+    (identifier)
+    (variant
+      (identifier)))
+  (import_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (brace_import_list
+      (import_item
+        (identifier)
+        (identifier))))
+  (type_declaration
+    (identifier)
+    (generic_params
+      (generic_param
+        (identifier)
+        (generic_constraint)))
+    (constructor_list
+      (constructor_declaration
+        (identifier)
+        (field_declaration
+          (identifier)
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier)))))))))
+  (param_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (type_application
+          (ident_path
+            (identifier))
+          (generic_arg
+            (type_expr
+              (dim_expr
+                (dim_term
+                  (ident_path
+                    (identifier)))))))
+        (ident_path
+          (identifier)))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (fn_call
+      (identifier)
+      (identifier)
+      (number)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (fn_call
+      (identifier)
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))))))))
+
+================================================================================
+Special productions commit only at their contextual delimiters
+================================================================================
+
+index TimeStep = // leading comment remains a named extra
+    linspace // range constructor
+    (0.0 s, 1.0 s, step // argument label
+    : 0.1 s);
+node folded: Dimensionless[TimeStep] = // leading comment remains a named extra
+    scan // recurrence form
+    (@values, 0.0, |step, unfold| step);
+node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
+    (0.0, |scan, linspace| scan);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (index_declaration
+    (identifier)
+    (line_comment)
+    (line_comment)
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier))))
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier))))
+    (line_comment)
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier)))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dimensionless)
+        (ident_path
+          (identifier))))
+    (line_comment)
+    (scan_expr
+      (line_comment)
+      (graph_ref
+        (identifier))
+      (number)
+      (identifier)
+      (identifier)
+      (ident_path
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dimensionless)
+        (ident_path
+          (identifier))))
+    (unfold_expr
+      (line_comment)
+      (number)
+      (identifier)
+      (identifier)
+      (ident_path
+        (identifier)))))

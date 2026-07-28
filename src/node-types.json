@@ -1879,7 +1879,15 @@
       "required": true,
       "types": [
         {
-          "type": "number",
+          "type": "nat_add_expr",
+          "named": true
+        },
+        {
+          "type": "nat_literal",
+          "named": true
+        },
+        {
+          "type": "nat_mul_expr",
           "named": true
         },
         {
@@ -1913,7 +1921,7 @@
         "required": false,
         "types": [
           {
-            "type": "type_expr",
+            "type": "generic_arg",
             "named": true
           }
         ]
@@ -3873,10 +3881,6 @@
       "required": false,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
           "type": "qualified_variant",
           "named": true
         }
@@ -5154,6 +5158,16 @@
     "type": "struct_construction",
     "named": true,
     "fields": {
+      "generic_arg": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "generic_arg",
+            "named": true
+          }
+        ]
+      },
       "path_segment": {
         "multiple": true,
         "required": false,
@@ -5170,16 +5184,6 @@
         "types": [
           {
             "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "type_arg": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "type_expr",
             "named": true
           }
         ]
@@ -5850,22 +5854,22 @@
     "type": "type_application",
     "named": true,
     "fields": {
+      "generic_arg": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "generic_arg",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
         "types": [
           {
             "type": "ident_path",
-            "named": true
-          }
-        ]
-      },
-      "type_arg": {
-        "multiple": true,
-        "required": true,
-        "types": [
-          {
-            "type": "type_expr",
             "named": true
           }
         ]

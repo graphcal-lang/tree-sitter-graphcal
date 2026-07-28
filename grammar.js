@@ -13,6 +13,11 @@ const PREC = {
   POWER: 8,      // ^
   POSTFIX: 9,    // . []
   CALL: 10,      // fn(...)
+  // Nat arithmetic lives only in type-level slots. Its elevated precedence
+  // keeps `M * N + 1` alive as a Nat argument instead of prematurely reducing
+  // `M * N` as a dimension expression inside a generic argument.
+  NAT_ADD: 11,
+  NAT_MUL: 12,
 };
 
 module.exports = grammar({
@@ -21,6 +26,17 @@ module.exports = grammar({
   extras: $ => [
     /\s/,
     $.line_comment,
+  ],
+
+  // These spellings are identifiers unless the external scanner sees both
+  // the precise parser state and the delimiter that commits to their special
+  // production. The sentinel opts out during error recovery.
+  externals: $ => [
+    $._scan_keyword,
+    $._unfold_keyword,
+    $._linspace_keyword,
+    $._step_keyword,
+    $._contextual_keyword_error_sentinel,
   ],
 
   word: $ => $.identifier,
@@ -57,11 +73,6 @@ module.exports = grammar({
     // reference grammar's comparisons are non-chaining, so the chained
     // `(a < b) > (c)` reading is never the intended one).
     [$.ident_path, $.fn_call, $.struct_construction],
-    // Inside a turbofish, a completed type argument reduces to
-    // `generic_arg` on the fn_call branch while the struct_construction
-    // branch shifts the following `,`/`>` directly. Keep both alive; the
-    // argument list after `(` disambiguates (field_init vs expr).
-    [$.generic_arg, $.struct_construction],
   ],
 
   rules: {
@@ -246,7 +257,6 @@ module.exports = grammar({
 
     multi_header_cell: $ => choice(
       "_",
-      $.identifier,
       $.qualified_variant,
     ),
 
@@ -334,29 +344,18 @@ module.exports = grammar({
       optional(","),
     ),
 
-    // A single constructor: bare identifier, parens-payload, or
-    // brace-payload form. Both payload spellings are accepted.
+    // A constructor is either a bare unit constructor or uses the one
+    // canonical parenthesized payload form.
     constructor_declaration: $ => seq(
       field("name", $.identifier),
-      optional(choice(
-        seq(
-          "(",
-          optional(seq(
-            $.field_declaration,
-            repeat(seq(",", $.field_declaration)),
-            optional(","),
-          )),
-          ")",
-        ),
-        seq(
-          "{",
-          optional(seq(
-            $.field_declaration,
-            repeat(seq(",", $.field_declaration)),
-            optional(","),
-          )),
-          "}",
-        ),
+      optional(seq(
+        "(",
+        optional(seq(
+          $.field_declaration,
+          repeat(seq(",", $.field_declaration)),
+          optional(","),
+        )),
+        ")",
       )),
     ),
 
@@ -386,13 +385,13 @@ module.exports = grammar({
         "index",
         field("name", $.identifier),
         "=",
-        "linspace",
+        alias($._linspace_keyword, "linspace"),
         "(",
         field("start", $._expr),
         ",",
         field("end", $._expr),
         ",",
-        "step",
+        alias($._step_keyword, "step"),
         ":",
         field("step", $._expr),
         ")",
@@ -426,7 +425,7 @@ module.exports = grammar({
       field("name", $.identifier),
       ":",
       field("constraint", $.generic_constraint),
-      optional(seq("=", field("default", $.type_expr))),
+      optional(seq("=", field("default", $.generic_arg))),
     ),
 
     generic_constraint: $ => choice("Dim", "Index", "Nat", "Type"),
@@ -879,14 +878,16 @@ module.exports = grammar({
 
     domain_bound_key: _$ => choice("min", "max"),
 
-    // Generic type application: Vec3<Length, ECI>, module.Vec3<Length>
+    // Sort-aware generic type application: Vec3<Length, ECI>, Fixed<N + 1>,
+    // module.Vec3<Length>. Semantic resolution classifies each argument as
+    // Dim, Index, Nat, or Type after resolving the applied declaration.
     // Uses dynamic precedence to prefer type_application over parsing `<` as
     // a comparison operator when an identifier path is followed by `<` in type context.
     type_application: $ => prec.dynamic(2, seq(
       field("name", $.ident_path),
       "<",
-      field("type_arg", $.type_expr),
-      repeat(seq(",", field("type_arg", $.type_expr))),
+      field("generic_arg", $.generic_arg),
+      repeat(seq(",", field("generic_arg", $.generic_arg))),
       optional(","),
       ">",
     )),
@@ -926,21 +927,21 @@ module.exports = grammar({
     ),
 
     // Nat addition expression in index position: N + 1, M + N + 2, M * N + 1
-    nat_add_expr: $ => prec.left(PREC.ADD, seq(
+    nat_add_expr: $ => prec.left(PREC.NAT_ADD, seq(
       field("left", choice($.identifier, $.nat_literal, $.nat_add_expr, $.nat_mul_expr)),
       "+",
       field("right", choice($.identifier, $.nat_literal, $.nat_mul_expr)),
     )),
 
     // Nat multiplication expression in index position: M * N, M * N * P, 2 * N
-    nat_mul_expr: $ => prec.left(PREC.MUL, seq(
+    nat_mul_expr: $ => prec.left(PREC.NAT_MUL, seq(
       field("left", choice($.identifier, $.nat_literal, $.nat_mul_expr)),
       "*",
       field("right", choice($.identifier, $.nat_literal)),
     )),
 
     // Integer literal in type/index position (e.g., 3 in D[3])
-    nat_literal: $ => /[0-9]+/,
+    nat_literal: $ => /[0-9][0-9_]*/,
 
     // ---------------------------------------------------------------
     // Dimension expressions: Length, Length^2, Mass * Length / Time^2
@@ -1132,7 +1133,7 @@ module.exports = grammar({
 
     // scan(source, init, |acc, val| body) -- accumulator scan (prefix scan)
     scan_expr: $ => seq(
-      "scan",
+      alias($._scan_keyword, "scan"),
       "(",
       field("source", $._expr),
       ",",
@@ -1149,7 +1150,7 @@ module.exports = grammar({
 
     // unfold(init, |prev_i, i| body) -- unfold (anamorphism)
     unfold_expr: $ => seq(
-      "unfold",
+      alias($._unfold_keyword, "unfold"),
       "(",
       field("init", $._expr),
       ",",
@@ -1286,14 +1287,19 @@ module.exports = grammar({
       ")",
     )),
 
-    // A generic argument in turbofish position: either a type or a nat
-    // literal. Carries PREC.CALL so the reduce to `generic_arg` inside a
-    // fn_call turbofish ties with (instead of statically losing to) the
-    // parallel struct_construction turbofish's shift of `,`/`>` — the
-    // tie is declared as a GLR conflict below.
+    // A generic argument shared by type applications, constructor calls, and
+    // parsed function calls. Nat arguments admit literals, lexical names, `+`,
+    // and `*`; bare names and name-only products can also parse as type
+    // expressions and remain semantically ambiguous until declaration lookup.
+    // Carries PREC.CALL so the reduce to `generic_arg` inside a fn_call
+    // turbofish ties with (instead of statically losing to) the parallel
+    // struct_construction turbofish's shift of `,`/`>` — the tie is declared
+    // as a GLR conflict below.
     generic_arg: $ => prec(PREC.CALL, choice(
       $.type_expr,
-      $.number,
+      $.nat_add_expr,
+      $.nat_mul_expr,
+      $.nat_literal,
     )),
 
     // Primary expressions.
@@ -1359,11 +1365,12 @@ module.exports = grammar({
     struct_construction: $ => prec(PREC.CALL, seq(
       field("type", $.identifier),
       repeat(seq(".", field("path_segment", $.identifier))),
-      // Dynamic precedence mirrors fn_call's turbofish (see there).
+      // Dynamic precedence mirrors fn_call's turbofish (see there). Type and
+      // constructor applications intentionally share `generic_arg` syntax.
       optional(prec.dynamic(2, seq(
         "<",
-        field("type_arg", $.type_expr),
-        repeat(seq(",", field("type_arg", $.type_expr))),
+        field("generic_arg", $.generic_arg),
+        repeat(seq(",", field("generic_arg", $.generic_arg))),
         optional(","),
         ">",
       ))),

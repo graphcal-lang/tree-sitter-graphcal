@@ -1,0 +1,73 @@
+================================================================================
+Brace constructor payloads are rejected
+================================================================================
+
+type Result {
+  Err { code: Int },
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (ERROR
+      (identifier))
+    (constructor_list
+      (constructor_declaration
+        (identifier)))
+    (ERROR
+      (int_type)))
+  (ERROR))
+
+================================================================================
+Bare heterogeneous header labels are rejected
+================================================================================
+
+param scalar: Dimensionless[Row],
+param enabled: Bool[Row, Mode]
+  = table[Row, (_, Mode)] {
+      : _, Safe;
+      A: 1.0, true;
+  };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (multi_decl
+    (multi_decl_slot
+      (multi_decl_kind)
+      (identifier)
+      (type_expr
+        (indexed_type
+          (dimensionless)
+          (ident_path
+            (identifier)))))
+    (multi_decl_slot
+      (multi_decl_kind)
+      (identifier)
+      (type_expr
+        (indexed_type
+          (bool_type)
+          (ident_path
+            (identifier))
+          (ident_path
+            (identifier)))))
+    (multi_table_expr
+      (ident_path
+        (identifier))
+      (slot_tuple
+        (slot_axis_entry)
+        (slot_axis_entry
+          (ident_path
+            (identifier))))
+      (multi_table_body
+        (multi_single
+          (multi_header_row
+            (multi_header_cell)
+            (ERROR
+              (identifier)))
+          (multi_data_row
+            (identifier)
+            (number)
+            (boolean)))))))

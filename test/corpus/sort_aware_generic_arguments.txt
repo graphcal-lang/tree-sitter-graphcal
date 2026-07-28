@@ -1,0 +1,151 @@
+================================================================================
+Generic arguments share type, constructor, and call syntax
+================================================================================
+
+index Phase = { A };
+type Marker { Marker }
+type Fixed<N: Nat = 3> { Fixed(value: Dimensionless) }
+type Matrix<D: Dim = Dimensionless, I: Index = Phase, N: Nat = 2 + 1, F: Type = Marker> {
+  Matrix(value: Fixed<N * N + 1>)
+}
+param value: Matrix<Dimensionless, Phase, 3, Marker> = Matrix<Dimensionless, Phase, 3, Marker>(
+  value: Fixed<10>(value: 1.0),
+);
+node parsed_but_semantically_rejected: Dimensionless = sqrt<1_000>(4.0);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (index_declaration
+    (identifier)
+    (variant
+      (identifier)))
+  (type_declaration
+    (identifier)
+    (constructor_list
+      (constructor_declaration
+        (identifier))))
+  (type_declaration
+    (identifier)
+    (generic_params
+      (generic_param
+        (identifier)
+        (generic_constraint)
+        (generic_arg
+          (nat_literal))))
+    (constructor_list
+      (constructor_declaration
+        (identifier)
+        (field_declaration
+          (identifier)
+          (type_expr
+            (dimensionless))))))
+  (type_declaration
+    (identifier)
+    (generic_params
+      (generic_param
+        (identifier)
+        (generic_constraint)
+        (generic_arg
+          (type_expr
+            (dimensionless))))
+      (generic_param
+        (identifier)
+        (generic_constraint)
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier)))))))
+      (generic_param
+        (identifier)
+        (generic_constraint)
+        (generic_arg
+          (nat_add_expr
+            (nat_literal)
+            (nat_literal))))
+      (generic_param
+        (identifier)
+        (generic_constraint)
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))))
+    (constructor_list
+      (constructor_declaration
+        (identifier)
+        (field_declaration
+          (identifier)
+          (type_expr
+            (type_application
+              (ident_path
+                (identifier))
+              (generic_arg
+                (nat_add_expr
+                  (nat_mul_expr
+                    (identifier)
+                    (identifier))
+                  (nat_literal)))))))))
+  (param_declaration
+    (identifier)
+    (type_expr
+      (type_application
+        (ident_path
+          (identifier))
+        (generic_arg
+          (type_expr
+            (dimensionless)))
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))
+        (generic_arg
+          (nat_literal))
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))))
+    (struct_construction
+      (identifier)
+      (generic_arg
+        (type_expr
+          (dimensionless)))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (generic_arg
+        (nat_literal))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (field_init
+        (identifier)
+        (struct_construction
+          (identifier)
+          (generic_arg
+            (nat_literal))
+          (field_init
+            (identifier)
+            (number))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (fn_call
+      (identifier)
+      (generic_arg
+        (nat_literal))
+      (number))))

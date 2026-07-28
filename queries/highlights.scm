@@ -21,7 +21,6 @@
   "type"
 
   "index"
-  "linspace"
   "import"
   "include"
   "dag"
@@ -51,6 +50,7 @@
 ; ---------------------------------------------------------------
 
 (number) @number
+(nat_literal) @number
 (boolean) @boolean
 (string_literal) @string
 
@@ -179,11 +179,13 @@
 (int_type) @type.builtin
 (datetime_type) @type.builtin
 
-; Generic constraints: Dim, Index
+; Generic constraints and parameter names: D: Dim, I: Index, N: Nat, F: Type
 (generic_constraint) @type.builtin
-
-; Generic parameter names: D, I
 (generic_param name: (identifier) @type)
+
+; Nat parameters inside sort-aware generic arguments.
+(nat_add_expr (identifier) @type)
+(nat_mul_expr (identifier) @type)
 
 ; Dimension terms in type annotations (Length, module.Time, Mass, etc.)
 (dim_term (ident_path (identifier) @type))
@@ -363,9 +365,10 @@
 (layer_named_field name: (identifier) @property)
 
 ; ---------------------------------------------------------------
-; Index declaration — "step" keyword in linspace
+; Range-index contextual keywords
 ; ---------------------------------------------------------------
 
+(index_declaration "linspace" @keyword)
 (index_declaration "step" @keyword)
 
 ; ---------------------------------------------------------------
@@ -390,10 +393,8 @@
 ; as types. (`_` placeholders are a literal token, not an identifier.)
 (slot_axis_entry (ident_path (identifier) @type))
 
-; Header-row cells that are bare variant identifiers: index variants.
-; (`_` placeholders are a literal token; qualified `Axis.Variant` is
-; already covered by the `qualified_variant` rule above.)
-(multi_header_cell (identifier) @constant)
+; Heterogeneous header labels use qualified `Axis.Variant` syntax and are
+; covered by the `qualified_variant` rule above. `_` remains a literal token.
 
 ; Row labels in multi-decl data rows.
 (multi_data_row row_label: (identifier) @constant)
