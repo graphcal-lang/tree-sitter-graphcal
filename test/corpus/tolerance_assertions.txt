@@ -1,0 +1,43 @@
+================================================================================
+Full-expression absolute tolerance
+================================================================================
+
+assert close = @actual ~= @expected +/- abs(@expected) * 0.05;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assert_declaration
+    (identifier)
+    (assert_body
+      (tolerance_assert
+        (graph_ref
+          (identifier))
+        (graph_ref
+          (identifier))
+        (binary_expr
+          (fn_call
+            (identifier)
+            (graph_ref
+              (identifier)))
+          (number))))))
+
+================================================================================
+Trailing percent is not assertion syntax
+================================================================================
+
+assert old = @actual ~= @expected +/- 5 %;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assert_declaration
+    (identifier)
+    (assert_body
+      (tolerance_assert
+        (graph_ref
+          (identifier))
+        (graph_ref
+          (identifier))
+        (number)))
+    (ERROR)))

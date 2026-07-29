@@ -338,7 +338,6 @@
 ; Tolerance assert operators
 (tolerance_assert "~=" @operator)
 (tolerance_assert "+/-" @operator)
-(tolerance_assert "%" @operator)
 
 ; ---------------------------------------------------------------
 ; Plot declarations

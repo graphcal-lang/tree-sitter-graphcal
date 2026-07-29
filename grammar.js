@@ -664,7 +664,7 @@ module.exports = grammar({
 
     // assert velocity_in_range = @velocity < @max_velocity;
     // assert mass_approx = @mass ~= 100.0 kg +/- 1.0 kg;
-    // assert approx_pct = @x ~= 50.0 +/- 5 %;
+    // assert relative = @x ~= 50.0 +/- abs(50.0) * 0.05;
     assert_declaration: $ => seq(
       repeat($.attribute),
       optional($.visibility),
@@ -843,15 +843,14 @@ module.exports = grammar({
       $._expr,
     ),
 
-    // actual ~= expected +/- tolerance
-    // actual ~= expected +/- tolerance %
+    // All three operands are full expressions. Tolerance is always absolute;
+    // `%` is only the ordinary binary modulo operator inside an expression.
     tolerance_assert: $ => seq(
       field("actual", $._expr),
       "~=",
       field("expected", $._expr),
       "+/-",
       field("tolerance", $._expr),
-      optional("%"),
     ),
 
     // ---------------------------------------------------------------
