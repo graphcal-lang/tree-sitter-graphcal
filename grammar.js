@@ -1169,16 +1169,20 @@ module.exports = grammar({
       ")",
     ),
 
-    // unfold(init, |prev_i, i| body) -- unfold (anamorphism)
+    // unfold(index, init, |prev_state, prev_i, i| body) -- unfold (anamorphism)
     unfold_expr: $ => seq(
       alias($._unfold_keyword, "unfold"),
       "(",
+      field("axis", $.ident_path),
+      ",",
       field("init", $._expr),
       ",",
       "|",
-      field("prev", $.identifier),
+      field("prev_state", $.identifier),
       ",",
-      field("curr", $.identifier),
+      field("prev_index", $.identifier),
+      ",",
+      field("index", $.identifier),
       "|",
       field("body", $._expr),
       ")",
