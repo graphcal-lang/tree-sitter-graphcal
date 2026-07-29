@@ -116,7 +116,7 @@ Special productions commit only at their contextual delimiters
 ================================================================================
 
 index TimeStep = // leading comment remains a named extra
-    linspace // range constructor
+    range // coordinate constructor
     (0.0 s, 1.0 s, step // argument label
     : 0.1 s);
 node folded: Dimensionless[TimeStep] = // leading comment remains a named extra

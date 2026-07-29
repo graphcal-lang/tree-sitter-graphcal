@@ -34,8 +34,11 @@ module.exports = grammar({
   externals: $ => [
     $._scan_keyword,
     $._unfold_keyword,
+    $._range_keyword,
     $._linspace_keyword,
     $._step_keyword,
+    $._points_keyword,
+    $._fin_keyword,
     $._contextual_keyword_error_sentinel,
   ],
 
@@ -122,17 +125,15 @@ module.exports = grammar({
       "]",
     ),
 
-    // An attribute argument: a path (ident or ident.ident.ident...), a
-    // `#N` Nat-range key, or a group ((arg, arg, ...))
+    // An attribute argument: a path, a `#N` Fin position, or a group.
     _attribute_arg: $ => choice(
       $.attribute_path,
-      $.attribute_range_step,
+      $.attribute_finite_position,
       $.attribute_group,
     ),
 
-    // Key for a Nat range axis (e.g. `#[expected_fail(#2)]`), matching
-    // the `#N` slice-label syntax that `table` expressions use.
-    attribute_range_step: $ => seq("#", $.nat_literal),
+    // Positional key for a Fin axis, matching table slice labels.
+    attribute_finite_position: $ => seq("#", $.nat_literal),
 
     attribute_path: $ => seq(
       $.identifier,
@@ -210,8 +211,8 @@ module.exports = grammar({
     multi_table_expr: $ => seq(
       "table",
       "[",
-      field("shared_axis", choice($.ident_path, $.nat_literal)),
-      repeat(seq(",", field("shared_axis", choice($.ident_path, $.nat_literal)))),
+      field("shared_axis", choice($.ident_path, $.finite_table_index)),
+      repeat(seq(",", field("shared_axis", choice($.ident_path, $.finite_table_index)))),
       ",",
       field("slot_tuple", $.slot_tuple),
       "]",
@@ -237,8 +238,8 @@ module.exports = grammar({
 
     multi_slice_section: $ => seq(
       "[",
-      $.qualified_variant,
-      repeat(seq(",", $.qualified_variant)),
+      $.table_slice_label,
+      repeat(seq(",", $.table_slice_label)),
       "]",
       $.multi_single,
     ),
@@ -261,8 +262,7 @@ module.exports = grammar({
     ),
 
     multi_data_row: $ => seq(
-      field("row_label", $.identifier),
-      ":",
+      optional(seq(field("row_label", $.identifier), ":")),
       field("value", $._expr),
       repeat(seq(",", field("value", $._expr))),
       ";",
@@ -360,9 +360,10 @@ module.exports = grammar({
     ),
 
     // index Maneuver = { Departure, Correction, Insertion };
-    // index TimeStep = linspace(0.0 s, 1.0 s, step: 0.1 s);
+    // index TimeStep = range(0.0 s, 1.0 s, step: 0.1 s);
+    // index Samples = linspace(0.0 s, 1.0 s, points: 11);
     // index Foo;  (required named)
-    // index Foo: Time;  (required range)
+    // index Foo: Time;  (required coordinate)
     index_declaration: $ => choice(
       // Named index: index Maneuver = { Departure, Correction, Insertion };
       seq(
@@ -371,21 +372,19 @@ module.exports = grammar({
         field("name", $.identifier),
         "=",
         "{",
-        optional(seq(
-          $.variant,
-          repeat(seq(",", $.variant)),
-          optional(","),
-        )),
+        $.variant,
+        repeat(seq(",", $.variant)),
+        optional(","),
         "}",
         ";",
       ),
-      // Linspace index: index TimeStep = linspace(0.0 s, 1.0 s, step: 0.1 s);
+      // Exact-step coordinate index.
       seq(
         optional($.visibility),
         "index",
         field("name", $.identifier),
         "=",
-        alias($._linspace_keyword, "linspace"),
+        alias($._range_keyword, "range"),
         "(",
         field("start", $._expr),
         ",",
@@ -397,9 +396,27 @@ module.exports = grammar({
         ")",
         ";",
       ),
+      // Exact-count coordinate index.
+      seq(
+        optional($.visibility),
+        "index",
+        field("name", $.identifier),
+        "=",
+        alias($._linspace_keyword, "linspace"),
+        "(",
+        field("start", $._expr),
+        ",",
+        field("end", $._expr),
+        ",",
+        alias($._points_keyword, "points"),
+        ":",
+        field("points", $._nat_expr),
+        ")",
+        ";",
+      ),
       // Required named: index Foo;
       seq(optional($.visibility), "index", field("name", $.identifier), ";"),
-      // Required range: index Foo: Time;
+      // Required coordinate: index Foo: Time;
       seq(
         optional($.visibility),
         "index",
@@ -909,20 +926,33 @@ module.exports = grammar({
       )),
     ),
 
-    // Indexed type: Velocity[Maneuver], Dimensionless[3, 4], D[M, N]
+    // Indexed type: Velocity[Maneuver], Dimensionless[Fin(3)], D[I]
     indexed_type: $ => seq(
       field("base", choice($.constrained_type, $._type_expr_base)),
       "[",
       $._index_expr,
       repeat(seq(",", $._index_expr)),
+      optional(","),
       "]",
     ),
 
-    // An expression in index position: a name, integer literal, nat addition, or nat multiplication
+    // Nat values are never implicitly lifted into Index positions.
     _index_expr: $ => choice(
+      $.finite_index,
+      $.ident_path,
+    ),
+
+    finite_index: $ => seq(
+      alias($._fin_keyword, "Fin"),
+      "(",
+      field("cardinality", $._nat_expr),
+      ")",
+    ),
+
+    _nat_expr: $ => choice(
       $.nat_add_expr,
       $.nat_mul_expr,
-      $.ident_path,
+      $.identifier,
       $.nat_literal,
     ),
 
@@ -940,7 +970,7 @@ module.exports = grammar({
       field("right", choice($.identifier, $.nat_literal)),
     )),
 
-    // Integer literal in type/index position (e.g., 3 in D[3])
+    // Integer literal in a type-level Nat expression.
     nat_literal: $ => /[0-9][0-9_]*/,
 
     // ---------------------------------------------------------------
@@ -1120,15 +1150,7 @@ module.exports = grammar({
     for_binding: $ => seq(
       field("var", $.identifier),
       ":",
-      field("index", choice($.ident_path, $.range_expr)),
-    ),
-
-    // range(N) expression in for bindings
-    range_expr: $ => seq(
-      "range",
-      "(",
-      field("arg", choice($.nat_add_expr, $.identifier, $.nat_literal)),
-      ")",
+      field("index", choice($.ident_path, $.finite_index)),
     ),
 
     // scan(source, init, |acc, val| body) -- accumulator scan (prefix scan)
@@ -1163,14 +1185,21 @@ module.exports = grammar({
       ")",
     ),
 
-    // Table expression: table[Index1, module.Index2] { ... }
-    // Syntax sugar for map literals with spreadsheet-like layout.
-    // Index specs are named identifier paths or integer literals (Nat range).
+    finite_table_index: $ => seq(
+      alias($._fin_keyword, "Fin"),
+      "(",
+      field("cardinality", $.nat_literal),
+      ")",
+    ),
+
+    // Table expression: table[Index1, Fin(3)] { ... }
+    // Fin cardinalities are concrete because table shape is parsed eagerly.
     table_expr: $ => seq(
       "table",
       "[",
-      field("index", choice($.ident_path, $.nat_literal)),
-      repeat(seq(",", field("index", choice($.ident_path, $.nat_literal)))),
+      field("index", choice($.ident_path, $.finite_table_index)),
+      repeat(seq(",", field("index", choice($.ident_path, $.finite_table_index)))),
+      optional(","),
       "]",
       "{",
       $.table_body,
@@ -1192,7 +1221,7 @@ module.exports = grammar({
       $.table_single,
     ),
 
-    // Slice labels: `Index.Variant` (named axis) or `#N` (Nat range axis).
+    // Slice labels: `Index.Variant` (named axis) or `#N` (Fin axis).
     table_slice_label: $ => choice(
       $.qualified_variant,
       seq("#", $.nat_literal),
@@ -1204,7 +1233,7 @@ module.exports = grammar({
     ),
 
     // Header row now requires a leading `:` prefix.
-    // Omitted when the column axis is a Nat range.
+    // Omitted when the column axis is Fin.
     table_header_row: $ => seq(
       ":",
       field("column", $.identifier),
@@ -1213,7 +1242,7 @@ module.exports = grammar({
     ),
 
     // Data row: `Label: val, val, ...;` for named row axes, or
-    // `val, val, ...;` for Nat range row axes. A row with a single
+    // `val, val, ...;` for Fin row axes. A row with a single
     // value and no label also covers the 1D case.
     table_data_row: $ => seq(
       optional(seq(field("row_label", $.identifier), ":")),
@@ -1296,6 +1325,7 @@ module.exports = grammar({
     // struct_construction turbofish's shift of `,`/`>` — the tie is declared
     // as a GLR conflict below.
     generic_arg: $ => prec(PREC.CALL, choice(
+      $.finite_index,
       $.type_expr,
       $.nat_add_expr,
       $.nat_mul_expr,

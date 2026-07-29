@@ -320,6 +320,7 @@
 (attribute "[" @punctuation.special)
 (attribute "]" @punctuation.special)
 (attribute name: (identifier) @attribute)
+(attribute_finite_position "#" @punctuation.special)
 
 ; Attribute path arguments: ident, Index.Variant
 (attribute_path (identifier) @variable)
@@ -365,11 +366,15 @@
 (layer_named_field name: (identifier) @property)
 
 ; ---------------------------------------------------------------
-; Range-index contextual keywords
+; Index-constructor contextual keywords
 ; ---------------------------------------------------------------
 
+(index_declaration "range" @keyword)
 (index_declaration "linspace" @keyword)
 (index_declaration "step" @keyword)
+(index_declaration "points" @keyword)
+(finite_index "Fin" @keyword)
+(finite_table_index "Fin" @keyword)
 
 ; ---------------------------------------------------------------
 ; Table expressions
@@ -377,6 +382,7 @@
 
 ; Index names in table[Index1, module.Index2]: highlighted as types
 (table_expr index: (ident_path (identifier) @type))
+(table_slice_label "#" @punctuation.special)
 
 ; Column headers in table header row: highlighted as index variants
 (table_header_row column: (identifier) @constant)

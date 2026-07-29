@@ -166,15 +166,30 @@
       "required": false,
       "types": [
         {
+          "type": "attribute_finite_position",
+          "named": true
+        },
+        {
           "type": "attribute_group",
           "named": true
         },
         {
           "type": "attribute_path",
           "named": true
-        },
+        }
+      ]
+    }
+  },
+  {
+    "type": "attribute_finite_position",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
         {
-          "type": "attribute_range_step",
+          "type": "nat_literal",
           "named": true
         }
       ]
@@ -189,15 +204,15 @@
       "required": true,
       "types": [
         {
+          "type": "attribute_finite_position",
+          "named": true
+        },
+        {
           "type": "attribute_group",
           "named": true
         },
         {
           "type": "attribute_path",
-          "named": true
-        },
-        {
-          "type": "attribute_range_step",
           "named": true
         }
       ]
@@ -213,21 +228,6 @@
       "types": [
         {
           "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "attribute_range_step",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "nat_literal",
           "named": true
         }
       ]
@@ -1583,6 +1583,50 @@
     }
   },
   {
+    "type": "finite_index",
+    "named": true,
+    "fields": {
+      "cardinality": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "nat_add_expr",
+            "named": true
+          },
+          {
+            "type": "nat_literal",
+            "named": true
+          },
+          {
+            "type": "nat_mul_expr",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "finite_table_index",
+    "named": true,
+    "fields": {
+      "cardinality": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "nat_literal",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "fn_call",
     "named": true,
     "fields": {
@@ -1725,11 +1769,11 @@
         "required": true,
         "types": [
           {
-            "type": "ident_path",
+            "type": "finite_index",
             "named": true
           },
           {
-            "type": "range_expr",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -1878,6 +1922,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "finite_index",
+          "named": true
+        },
         {
           "type": "nat_add_expr",
           "named": true
@@ -2746,6 +2794,28 @@
           }
         ]
       },
+      "points": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "nat_add_expr",
+            "named": true
+          },
+          {
+            "type": "nat_literal",
+            "named": true
+          },
+          {
+            "type": "nat_mul_expr",
+            "named": true
+          }
+        ]
+      },
       "start": {
         "multiple": false,
         "required": false,
@@ -3002,19 +3072,11 @@
       "required": true,
       "types": [
         {
+          "type": "finite_index",
+          "named": true
+        },
+        {
           "type": "ident_path",
-          "named": true
-        },
-        {
-          "type": "nat_add_expr",
-          "named": true
-        },
-        {
-          "type": "nat_literal",
-          "named": true
-        },
-        {
-          "type": "nat_mul_expr",
           "named": true
         }
       ]
@@ -3687,7 +3749,7 @@
     "fields": {
       "row_label": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "identifier",
@@ -3935,7 +3997,7 @@
           "named": true
         },
         {
-          "type": "qualified_variant",
+          "type": "table_slice_label",
           "named": true
         }
       ]
@@ -3969,11 +4031,11 @@
         "required": true,
         "types": [
           {
-            "type": "ident_path",
+            "type": "finite_table_index",
             "named": true
           },
           {
-            "type": "nat_literal",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -4708,30 +4770,6 @@
     }
   },
   {
-    "type": "range_expr",
-    "named": true,
-    "fields": {
-      "arg": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          },
-          {
-            "type": "nat_add_expr",
-            "named": true
-          },
-          {
-            "type": "nat_literal",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "scan_expr",
     "named": true,
     "fields": {
@@ -5342,11 +5380,11 @@
         "required": true,
         "types": [
           {
-            "type": "ident_path",
+            "type": "finite_table_index",
             "named": true
           },
           {
-            "type": "nat_literal",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -6727,6 +6765,10 @@
     "named": false
   },
   {
+    "type": "Fin",
+    "named": false
+  },
+  {
     "type": "Index",
     "named": false
   },
@@ -6905,6 +6947,10 @@
   },
   {
     "type": "point",
+    "named": false
+  },
+  {
+    "type": "points",
     "named": false
   },
   {

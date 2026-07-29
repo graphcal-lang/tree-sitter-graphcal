@@ -1,9 +1,9 @@
 ================================================================================
-Nat-range label in attribute argument
+Fin position in attribute argument
 ================================================================================
 
 #[expected_fail(#1)]
-assert single_range = for i: range(2) { i == 0 };
+assert single_finite = for i: Fin(2) { i == 0 };
 
 --------------------------------------------------------------------------------
 
@@ -11,14 +11,14 @@ assert single_range = for i: range(2) { i == 0 };
   (assert_declaration
     (attribute
       (identifier)
-      (attribute_range_step
+      (attribute_finite_position
         (nat_literal)))
     (identifier)
     (assert_body
       (for_expr
         (for_binding
           (identifier)
-          (range_expr
+          (finite_index
             (nat_literal)))
         (binary_expr
           (ident_path
@@ -26,7 +26,7 @@ assert single_range = for i: range(2) { i == 0 };
           (number))))))
 
 ================================================================================
-Mixed tuple attribute argument with Nat-range label
+Mixed tuple attribute argument with Fin position
 ================================================================================
 
 #[expected_fail((Mode.Boost, #1))]
@@ -42,7 +42,7 @@ assert mixed = @x == 0;
         (attribute_path
           (identifier)
           (identifier))
-        (attribute_range_step
+        (attribute_finite_position
           (nat_literal))))
     (identifier)
     (assert_body

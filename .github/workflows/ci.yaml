@@ -34,15 +34,32 @@ jobs:
       - name: Run corpus tests
         run: npm test
 
+      - name: Select matching Graphcal fixture branch
+        id: graphcal_ref
+        env:
+          CANDIDATE_REF: ${{ github.head_ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ "$HEAD_REPOSITORY" == "$GITHUB_REPOSITORY" ]] && \
+            [[ -n "$CANDIDATE_REF" ]] && git ls-remote --exit-code --heads \
+            https://github.com/graphcal-lang/graphcal.git \
+            "refs/heads/$CANDIDATE_REF" > /dev/null
+          then
+            echo "ref=$CANDIDATE_REF" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=main" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout graphcal fixtures
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: graphcal-lang/graphcal
+          ref: ${{ steps.graphcal_ref.outputs.ref }}
           path: graphcal
           persist-credentials: false
 
       # Guard against grammar gaps accumulating silently (issue #31):
-      # every valid fixture in the main repo must parse without errors.
+      # every valid fixture in the matching companion branch, or main, must parse.
       - name: Parse all valid fixtures from graphcal
         run: npx tree-sitter parse --quiet 'graphcal/tests/fixtures/valid/**/*.gcl'
 
