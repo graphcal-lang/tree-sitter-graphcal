@@ -123,7 +123,7 @@ node folded: Dimensionless[TimeStep] = // leading comment remains a named extra
     scan // recurrence form
     (@values, 0.0, |step, unfold| step);
 node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
-    (0.0, |scan, linspace| scan);
+    (TimeStep, 0.0, |scan, linspace, step| scan);
 
 --------------------------------------------------------------------------------
 
@@ -174,7 +174,10 @@ node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
           (identifier))))
     (unfold_expr
       (line_comment)
+      (ident_path
+        (identifier))
       (number)
+      (identifier)
       (identifier)
       (identifier)
       (ident_path

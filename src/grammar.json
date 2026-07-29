@@ -5489,6 +5489,18 @@
         },
         {
           "type": "FIELD",
+          "name": "axis",
+          "content": {
+            "type": "SYMBOL",
+            "name": "ident_path"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ","
+        },
+        {
+          "type": "FIELD",
           "name": "init",
           "content": {
             "type": "SYMBOL",
@@ -5505,7 +5517,7 @@
         },
         {
           "type": "FIELD",
-          "name": "prev",
+          "name": "prev_state",
           "content": {
             "type": "SYMBOL",
             "name": "identifier"
@@ -5517,7 +5529,19 @@
         },
         {
           "type": "FIELD",
-          "name": "curr",
+          "name": "prev_index",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ","
+        },
+        {
+          "type": "FIELD",
+          "name": "index",
           "content": {
             "type": "SYMBOL",
             "name": "identifier"

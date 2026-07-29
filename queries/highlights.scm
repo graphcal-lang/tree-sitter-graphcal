@@ -308,8 +308,10 @@
 ; ---------------------------------------------------------------
 
 (unfold_expr "unfold" @function.builtin)
-(unfold_expr prev: (identifier) @variable.parameter)
-(unfold_expr curr: (identifier) @variable.parameter)
+(unfold_expr axis: (ident_path (identifier) @type))
+(unfold_expr prev_state: (identifier) @variable.parameter)
+(unfold_expr prev_index: (identifier) @variable.parameter)
+(unfold_expr index: (identifier) @variable.parameter)
 
 ; ---------------------------------------------------------------
 ; Attributes
