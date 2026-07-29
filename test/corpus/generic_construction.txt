@@ -13,28 +13,32 @@ param pos_eci: Vec3<Length, Eci> = Vec3<Length, Eci>(x: 6878.0 km, y: 0.0 km, z:
       (type_application
         (ident_path
           (identifier))
-        (type_expr
-          (dim_expr
-            (dim_term
-              (ident_path
-                (identifier)))))
-        (type_expr
-          (dim_expr
-            (dim_term
-              (ident_path
-                (identifier)))))))
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))))
     (struct_construction
       (identifier)
-      (type_expr
-        (dim_expr
-          (dim_term
-            (ident_path
-              (identifier)))))
-      (type_expr
-        (dim_expr
-          (dim_term
-            (ident_path
-              (identifier)))))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
       (field_init
         (identifier)
         (unit_literal
@@ -72,18 +76,20 @@ param pos3_default: Pos3<Length> = Pos3<Length>(x: 10.0 km, y: 20.0 km, z: 30.0 
       (type_application
         (ident_path
           (identifier))
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))))
+    (struct_construction
+      (identifier)
+      (generic_arg
         (type_expr
           (dim_expr
             (dim_term
               (ident_path
-                (identifier)))))))
-    (struct_construction
-      (identifier)
-      (type_expr
-        (dim_expr
-          (dim_term
-            (ident_path
-              (identifier)))))
+                (identifier))))))
       (field_init
         (identifier)
         (unit_literal
