@@ -6252,6 +6252,16 @@
     "type": "unfold_expr",
     "named": true,
     "fields": {
+      "axis": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ident_path",
+            "named": true
+          }
+        ]
+      },
       "body": {
         "multiple": false,
         "required": true,
@@ -6350,7 +6360,7 @@
           }
         ]
       },
-      "curr": {
+      "index": {
         "multiple": false,
         "required": true,
         "types": [
@@ -6458,7 +6468,17 @@
           }
         ]
       },
-      "prev": {
+      "prev_index": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "prev_state": {
         "multiple": false,
         "required": true,
         "types": [
