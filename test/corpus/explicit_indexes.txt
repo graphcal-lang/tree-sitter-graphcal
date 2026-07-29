@@ -1,0 +1,204 @@
+================================================================================
+Coordinate constructors use distinct authoritative labels
+================================================================================
+
+index ByStep = range(1.0 s, -1.0 s, step: -0.5 s);
+index ByCount = linspace(0.0 s, 1.0 s, points: N + 1);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (index_declaration
+    (identifier)
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier))))
+    (unary_expr
+      (unit_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (identifier)))))
+    (unary_expr
+      (unit_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (identifier))))))
+  (index_declaration
+    (identifier)
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier))))
+    (unit_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (identifier))))
+    (nat_add_expr
+      (identifier)
+      (nat_literal))))
+
+================================================================================
+Fin is explicit in indexed types, generic arguments, loops, and tables
+================================================================================
+
+type Vector<N: Nat, D: Dim> { Vector(values: D[Fin(N)]) }
+param wrapped: IndexedVector<Fin(3), Dimensionless>;
+node values: Dimensionless[Fin(N + 1)] = for i: Fin(N + 1) { 1.0 };
+param literal: Dimensionless[Fin(3)] = table[Fin(3)] { 1.0; 2.0; 3.0; };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (generic_params
+      (generic_param
+        (identifier)
+        (generic_constraint))
+      (generic_param
+        (identifier)
+        (generic_constraint)))
+    (constructor_list
+      (constructor_declaration
+        (identifier)
+        (field_declaration
+          (identifier)
+          (type_expr
+            (indexed_type
+              (dim_expr
+                (dim_term
+                  (ident_path
+                    (identifier))))
+              (finite_index
+                (identifier))))))))
+  (param_declaration
+    (identifier)
+    (type_expr
+      (type_application
+        (ident_path
+          (identifier))
+        (generic_arg
+          (finite_index
+            (nat_literal)))
+        (generic_arg
+          (type_expr
+            (dimensionless))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dimensionless)
+        (finite_index
+          (nat_add_expr
+            (identifier)
+            (nat_literal)))))
+    (for_expr
+      (for_binding
+        (identifier)
+        (finite_index
+          (nat_add_expr
+            (identifier)
+            (nat_literal))))
+      (number)))
+  (param_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dimensionless)
+        (finite_index
+          (nat_literal))))
+    (table_expr
+      (finite_table_index
+        (nat_literal))
+      (table_body
+        (table_single
+          (table_data_row
+            (number))
+          (table_data_row
+            (number))
+          (table_data_row
+            (number)))))))
+
+================================================================================
+Multi-declarations accept Fin slice and row axes
+================================================================================
+
+param x: Dimensionless[Fin(2), Fin(2)],
+param y: Dimensionless[Fin(2), Fin(2)]
+  = table[Fin(2), Fin(2), (_, _)] {
+      [#0]
+      : _, _;
+      1.0, 2.0;
+      3.0, 4.0;
+
+      [#1]
+      : _, _;
+      5.0, 6.0;
+      7.0, 8.0;
+  };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (multi_decl
+    (multi_decl_slot
+      (multi_decl_kind)
+      (identifier)
+      (type_expr
+        (indexed_type
+          (dimensionless)
+          (finite_index
+            (nat_literal))
+          (finite_index
+            (nat_literal)))))
+    (multi_decl_slot
+      (multi_decl_kind)
+      (identifier)
+      (type_expr
+        (indexed_type
+          (dimensionless)
+          (finite_index
+            (nat_literal))
+          (finite_index
+            (nat_literal)))))
+    (multi_table_expr
+      (finite_table_index
+        (nat_literal))
+      (finite_table_index
+        (nat_literal))
+      (slot_tuple
+        (slot_axis_entry)
+        (slot_axis_entry))
+      (multi_table_body
+        (multi_slice_section
+          (table_slice_label
+            (nat_literal))
+          (multi_single
+            (multi_header_row
+              (multi_header_cell)
+              (multi_header_cell))
+            (multi_data_row
+              (number)
+              (number))
+            (multi_data_row
+              (number)
+              (number))))
+        (multi_slice_section
+          (table_slice_label
+            (nat_literal))
+          (multi_single
+            (multi_header_row
+              (multi_header_cell)
+              (multi_header_cell))
+            (multi_data_row
+              (number)
+              (number))
+            (multi_data_row
+              (number)
+              (number))))))))

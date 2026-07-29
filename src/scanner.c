@@ -8,8 +8,11 @@
 enum TokenType {
   SCAN_KEYWORD,
   UNFOLD_KEYWORD,
+  RANGE_KEYWORD,
   LINSPACE_KEYWORD,
   STEP_KEYWORD,
+  POINTS_KEYWORD,
+  FIN_KEYWORD,
   CONTEXTUAL_KEYWORD_ERROR_SENTINEL,
 };
 
@@ -96,7 +99,8 @@ bool tree_sitter_graphcal_external_scanner_scan(void *payload, TSLexer *lexer,
   skip_leading_whitespace(lexer);
 
   if (lexer->lookahead != 's' && lexer->lookahead != 'u' &&
-      lexer->lookahead != 'l') {
+      lexer->lookahead != 'r' && lexer->lookahead != 'l' &&
+      lexer->lookahead != 'p' && lexer->lookahead != 'F') {
     return false;
   }
 
@@ -119,6 +123,10 @@ bool tree_sitter_graphcal_external_scanner_scan(void *payload, TSLexer *lexer,
              word_equals(word, length, "unfold", 6)) {
     symbol = UNFOLD_KEYWORD;
     delimiter = '(';
+  } else if (valid_symbols[RANGE_KEYWORD] &&
+             word_equals(word, length, "range", 5)) {
+    symbol = RANGE_KEYWORD;
+    delimiter = '(';
   } else if (valid_symbols[LINSPACE_KEYWORD] &&
              word_equals(word, length, "linspace", 8)) {
     symbol = LINSPACE_KEYWORD;
@@ -127,6 +135,14 @@ bool tree_sitter_graphcal_external_scanner_scan(void *payload, TSLexer *lexer,
              word_equals(word, length, "step", 4)) {
     symbol = STEP_KEYWORD;
     delimiter = ':';
+  } else if (valid_symbols[POINTS_KEYWORD] &&
+             word_equals(word, length, "points", 6)) {
+    symbol = POINTS_KEYWORD;
+    delimiter = ':';
+  } else if (valid_symbols[FIN_KEYWORD] &&
+             word_equals(word, length, "Fin", 3)) {
+    symbol = FIN_KEYWORD;
+    delimiter = '(';
   } else {
     return false;
   }
