@@ -76,6 +76,10 @@ module.exports = grammar({
     // reference grammar's comparisons are non-chaining, so the chained
     // `(a < b) > (c)` reading is never the intended one).
     [$.ident_path, $.fn_call, $.struct_construction],
+    // Keep both parses alive after a unit term followed by `*` or `/`.
+    // The next token distinguishes a compound unit (`m / s`) from
+    // quantity arithmetic (`1.0 m / 2.0 s`).
+    [$.unit_expr],
   ],
 
   rules: {
@@ -1012,11 +1016,11 @@ module.exports = grammar({
     // The optional `1/` prefix is the reciprocal shorthand (e.g. `1/min`);
     // the literal `1` numerator contributes nothing and only `1` is
     // allowed there (per grammar.ebnf `unit_expr`).
-    unit_expr: $ => prec.right(PREC.MUL + 1, seq(
+    unit_expr: $ => seq(
       optional(seq("1", "/")),
       $.unit_term,
-      repeat(seq(choice("*", "/"), $.unit_term)),
-    )),
+      repeat(prec.dynamic(1, seq(choice("*", "/"), $.unit_term))),
+    ),
 
     // A unit reference is a bare IDENT (local declaration, selective
     // import, or prelude unit) or `alias.unit` for a `pub` unit of a
