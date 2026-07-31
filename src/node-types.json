@@ -575,6 +575,22 @@
     }
   },
   {
+    "type": "complex_type",
+    "named": true,
+    "fields": {
+      "dimension": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "generic_arg",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "constrained_type",
     "named": true,
     "fields": {
@@ -584,6 +600,10 @@
         "types": [
           {
             "type": "bool_type",
+            "named": true
+          },
+          {
+            "type": "complex_type",
             "named": true
           },
           {
@@ -3038,6 +3058,10 @@
         "types": [
           {
             "type": "bool_type",
+            "named": true
+          },
+          {
+            "type": "complex_type",
             "named": true
           },
           {
@@ -6100,6 +6124,10 @@
           "named": true
         },
         {
+          "type": "complex_type",
+          "named": true
+        },
+        {
           "type": "constrained_type",
           "named": true
         },
@@ -6774,6 +6802,10 @@
   },
   {
     "type": "@",
+    "named": false
+  },
+  {
+    "type": "Complex",
     "named": false
   },
   {

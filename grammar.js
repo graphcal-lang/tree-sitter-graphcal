@@ -868,6 +868,7 @@ module.exports = grammar({
       $.bool_type,
       $.int_type,
       $.datetime_type,
+      $.complex_type,
       $.type_application,
       $.dim_expr,
     ),
@@ -923,6 +924,14 @@ module.exports = grammar({
         optional(","),
         ">",
       )),
+    ),
+
+    // Built-in dimension-aware complex quantity: Complex<Length>, Complex<D / Time>.
+    complex_type: $ => seq(
+      "Complex",
+      "<",
+      field("dimension", $.generic_arg),
+      ">",
     ),
 
     // Indexed type: Velocity[Maneuver], Dimensionless[Fin(3)], D[I]
