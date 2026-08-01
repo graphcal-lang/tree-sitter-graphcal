@@ -178,6 +178,7 @@
 (bool_type) @type.builtin
 (int_type) @type.builtin
 (datetime_type) @type.builtin
+(complex_type) @type.builtin
 
 ; Generic constraints and parameter names: D: Dim, I: Index, N: Nat, F: Type
 (generic_constraint) @type.builtin

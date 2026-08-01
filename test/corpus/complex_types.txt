@@ -1,0 +1,87 @@
+================================================================================
+Dimension-aware complex types
+================================================================================
+
+type Phasor<D: Dim> { Phasor(value: Complex<D>) }
+index Sample = { A };
+node z: Complex<Length> = complex(3.0 m, 4.0 m);
+node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (identifier)
+    (generic_params
+      (generic_param
+        (identifier)
+        (generic_constraint)))
+    (constructor_list
+      (constructor_declaration
+        (identifier)
+        (field_declaration
+          (identifier)
+          (type_expr
+            (complex_type
+              (generic_arg
+                (type_expr
+                  (dim_expr
+                    (dim_term
+                      (ident_path
+                        (identifier))))))))))))
+  (index_declaration
+    (identifier)
+    (variant
+      (identifier)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (complex_type
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier))))))))
+    (fn_call
+      (identifier)
+      (unit_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (identifier))))
+      (unit_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (identifier))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (complex_type
+          (generic_arg
+            (type_expr
+              (dim_expr
+                (dim_term
+                  (ident_path
+                    (identifier)))
+                (dim_term
+                  (ident_path
+                    (identifier)))))))
+        (ident_path
+          (identifier))))
+    (map_literal
+      (map_entry
+        (qualified_variant
+          (identifier)
+          (identifier))
+        (fn_call
+          (identifier)
+          (unit_literal
+            (number)
+            (unit_expr
+              (unit_term
+                (identifier))
+              (unit_term
+                (identifier)))))))))
