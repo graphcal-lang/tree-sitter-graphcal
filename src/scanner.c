@@ -13,6 +13,11 @@ enum TokenType {
   STEP_KEYWORD,
   POINTS_KEYWORD,
   FIN_KEYWORD,
+  KEY_KEYWORD,
+  FIN_KEY_KEYWORD,
+  FLOOR_KEY_KEYWORD,
+  CEIL_KEY_KEYWORD,
+  NEAREST_KEY_KEYWORD,
   CONTEXTUAL_KEYWORD_ERROR_SENTINEL,
 };
 
@@ -100,11 +105,13 @@ bool tree_sitter_graphcal_external_scanner_scan(void *payload, TSLexer *lexer,
 
   if (lexer->lookahead != 's' && lexer->lookahead != 'u' &&
       lexer->lookahead != 'r' && lexer->lookahead != 'l' &&
-      lexer->lookahead != 'p' && lexer->lookahead != 'F') {
+      lexer->lookahead != 'p' && lexer->lookahead != 'F' &&
+      lexer->lookahead != 'k' && lexer->lookahead != 'f' &&
+      lexer->lookahead != 'c' && lexer->lookahead != 'n') {
     return false;
   }
 
-  char word[8];
+  char word[12];
   size_t length = 0;
   while (is_identifier_continue(lexer->lookahead)) {
     if (length == sizeof(word)) {
@@ -142,6 +149,26 @@ bool tree_sitter_graphcal_external_scanner_scan(void *payload, TSLexer *lexer,
   } else if (valid_symbols[FIN_KEYWORD] &&
              word_equals(word, length, "Fin", 3)) {
     symbol = FIN_KEYWORD;
+    delimiter = '(';
+  } else if (valid_symbols[KEY_KEYWORD] &&
+             word_equals(word, length, "key", 3)) {
+    symbol = KEY_KEYWORD;
+    delimiter = '(';
+  } else if (valid_symbols[FIN_KEY_KEYWORD] &&
+             word_equals(word, length, "fin_key", 7)) {
+    symbol = FIN_KEY_KEYWORD;
+    delimiter = '(';
+  } else if (valid_symbols[FLOOR_KEY_KEYWORD] &&
+             word_equals(word, length, "floor_key", 9)) {
+    symbol = FLOOR_KEY_KEYWORD;
+    delimiter = '(';
+  } else if (valid_symbols[CEIL_KEY_KEYWORD] &&
+             word_equals(word, length, "ceil_key", 8)) {
+    symbol = CEIL_KEY_KEYWORD;
+    delimiter = '(';
+  } else if (valid_symbols[NEAREST_KEY_KEYWORD] &&
+             word_equals(word, length, "nearest_key", 11)) {
+    symbol = NEAREST_KEY_KEYWORD;
     delimiter = '(';
   } else {
     return false;
