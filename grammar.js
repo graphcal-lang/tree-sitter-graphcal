@@ -39,6 +39,11 @@ module.exports = grammar({
     $._step_keyword,
     $._points_keyword,
     $._fin_keyword,
+    $._key_keyword,
+    $._fin_key_keyword,
+    $._floor_key_keyword,
+    $._ceil_key_keyword,
+    $._nearest_key_keyword,
     $._contextual_keyword_error_sentinel,
   ],
 
@@ -873,6 +878,7 @@ module.exports = grammar({
       $.int_type,
       $.datetime_type,
       $.complex_type,
+      $.key_type,
       $.type_application,
       $.dim_expr,
     ),
@@ -935,6 +941,16 @@ module.exports = grammar({
       "Complex",
       "<",
       field("dimension", $.generic_arg),
+      ">",
+    ),
+
+    // Built-in index-key reflection type: Key<Maneuver>, Key<Fin(3)>,
+    // Key<mission.Maneuver>, Key<I>. The sole argument must have sort
+    // Index; bare `Key` is rejected.
+    key_type: $ => seq(
+      "Key",
+      "<",
+      field("index", $.generic_arg),
       ">",
     ),
 
@@ -1055,6 +1071,7 @@ module.exports = grammar({
       $.for_expr,
       $.scan_expr,
       $.unfold_expr,
+      $.key_form_expr,
       $.table_expr,
       $._postfix_expr,
     ),
@@ -1198,6 +1215,27 @@ module.exports = grammar({
       field("index", $.identifier),
       "|",
       field("body", $._expr),
+      ")",
+    ),
+
+    // Key introduction forms: key(Fin(8), 1), fin_key(Fin(8), @n),
+    // floor_key(TimeStep, @t), ceil_key(TimeStep, @t),
+    // nearest_key(TimeStep, @t). The first argument is an index reference
+    // (a named index path or `Fin(N)`), not a value expression. Like
+    // `scan`/`unfold`, the head spellings are contextual: they select this
+    // form only as bare call heads immediately followed by `(`.
+    key_form_expr: $ => seq(
+      choice(
+        alias($._key_keyword, "key"),
+        alias($._fin_key_keyword, "fin_key"),
+        alias($._floor_key_keyword, "floor_key"),
+        alias($._ceil_key_keyword, "ceil_key"),
+        alias($._nearest_key_keyword, "nearest_key"),
+      ),
+      "(",
+      field("axis", choice($.ident_path, $.finite_index)),
+      ",",
+      field("value", $._expr),
       ")",
     ),
 
