@@ -132,8 +132,8 @@
 ; dag my_pipeline { ... }
 (dag_declaration name: (identifier) @function)
 
-; Casing heuristics for import items:
-; ALL_CAPS → built-in constant, PascalCase → type, else → variable
+; Casing heuristics for bare term import items:
+; ALL_CAPS → built-in constant, PascalCase → constructor, else → variable
 (import_item name: (identifier) @constant
   (#match? @constant "^[A-Z][A-Z0-9_]*$"))
 (import_item name: (identifier) @type
@@ -147,6 +147,10 @@
   (#match? @type "^[A-Z][a-z]"))
 (import_item alias: (identifier) @variable
   (#match? @variable "^[a-z]"))
+
+; Explicit categories override the fallback casing styles above.
+(import_item category: (import_category) @keyword name: (identifier) @type)
+(import_item category: (import_category) alias: (identifier) @type)
 
 (include_item name: (identifier) @constant
   (#match? @constant "^[A-Z][A-Z0-9_]*$"))

@@ -2225,6 +2225,11 @@
     }
   },
   {
+    "type": "import_category",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "import_declaration",
     "named": true,
     "fields": {
@@ -2278,6 +2283,16 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "category": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "import_category",
             "named": true
           }
         ]
