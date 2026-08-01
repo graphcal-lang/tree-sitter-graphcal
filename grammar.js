@@ -459,7 +459,7 @@ module.exports = grammar({
 
     // import nasa.rocket;                                 -- bare module import
     // import nasa.rocket as r;                            -- module import with alias
-    // import nasa.rocket.{ Orbit, compute_thrust as ct };  -- brace-list selector
+    // import nasa.rocket.{ type Orbit, compute_thrust as ct }; -- brace-list selector
     //
     // `pub import ...` re-exports. The brace-list and `as` forms are
     // mutually exclusive. All paths are dot-separated and absolute from
@@ -652,15 +652,17 @@ module.exports = grammar({
       repeat(seq(".", $.identifier)),
     )),
 
-    // Import item with optional namespace marker, alias, and optional
-    // `pub` re-export marker: name, type Name, pub type Name as Alias.
+    // Import item with an explicit marker for every non-term namespace.
+    // Bare items select terms (declarations and constructors).
     import_item: $ => seq(
       repeat($.attribute),
       optional("pub"),
-      optional("type"),
+      optional(field("category", $.import_category)),
       field("name", $.identifier),
       optional(seq("as", field("alias", $.identifier))),
     ),
+
+    import_category: _ => choice("type", "dim", "unit", "index"),
 
     // Include item with optional alias and optional `pub` re-export
     // marker: name, name as alias, pub name, pub name as alias.

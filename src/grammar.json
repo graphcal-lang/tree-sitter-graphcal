@@ -2605,8 +2605,12 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "type"
+              "type": "FIELD",
+              "name": "category",
+              "content": {
+                "type": "SYMBOL",
+                "name": "import_category"
+              }
             },
             {
               "type": "BLANK"
@@ -2645,6 +2649,27 @@
               "type": "BLANK"
             }
           ]
+        }
+      ]
+    },
+    "import_category": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "type"
+        },
+        {
+          "type": "STRING",
+          "value": "dim"
+        },
+        {
+          "type": "STRING",
+          "value": "unit"
+        },
+        {
+          "type": "STRING",
+          "value": "index"
         }
       ]
     },

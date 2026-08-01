@@ -1,0 +1,35 @@
+================================================================================
+Selective imports declare non-term categories explicitly
+================================================================================
+
+import finance.models.{
+    dim Information,
+    unit JPY as yen,
+    index Category,
+    type Student,
+    Student,
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (brace_import_list
+      (import_item
+        (import_category)
+        (identifier))
+      (import_item
+        (import_category)
+        (identifier)
+        (identifier))
+      (import_item
+        (import_category)
+        (identifier))
+      (import_item
+        (import_category)
+        (identifier))
+      (import_item
+        (identifier)))))
