@@ -28,6 +28,11 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Verify package lockfile is up to date
+        run: |
+          npm install --package-lock-only --ignore-scripts
+          git diff --exit-code -- package-lock.json
+
       - name: Regenerate parser
         run: npm run generate
 
