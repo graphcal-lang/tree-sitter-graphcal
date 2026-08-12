@@ -59,12 +59,12 @@ node ratio: Dimensionless = 75.3 cm / 1.0 cm;
     (type_expr
       (dimensionless))
     (binary_expr
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term
             (identifier))))
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term

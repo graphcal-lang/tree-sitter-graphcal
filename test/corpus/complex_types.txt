@@ -45,12 +45,12 @@ node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
                   (identifier))))))))
     (fn_call
       (identifier)
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term
             (identifier))))
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term
@@ -78,7 +78,7 @@ node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
           (identifier))
         (fn_call
           (identifier)
-          (unit_literal
+          (quantity_literal
             (number)
             (unit_expr
               (unit_term

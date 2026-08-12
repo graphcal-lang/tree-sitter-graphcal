@@ -3,11 +3,11 @@ Selective imports declare non-term categories explicitly
 ================================================================================
 
 import finance.models.{
-    dim Information,
+    pub dim Information,
     unit JPY as yen,
-    index Category,
+    pub index Category,
     type Student,
-    Student,
+    pub Student,
 };
 
 --------------------------------------------------------------------------------
@@ -33,3 +33,34 @@ import finance.models.{
         (identifier))
       (import_item
         (identifier)))))
+
+================================================================================
+Leading visibility on an import is rejected
+================================================================================
+
+pub import finance.models;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (ERROR
+    (identifier)
+    (identifier)
+    (identifier)))
+
+================================================================================
+Leading bindable visibility on an include is rejected
+================================================================================
+
+pub(bind) include finance.models.report() as result;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (ERROR
+    (visibility)
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)))

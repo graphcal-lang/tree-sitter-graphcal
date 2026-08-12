@@ -63,7 +63,7 @@ node launch_tokyo: Datetime = @launch -> "Asia/Tokyo";
 Datetime type application
 ================================================================================
 
-param t_tt: Datetime<TT> = epoch("2024-11-05T12:00:00", TT);
+param t_tt: Datetime<TT> = epoch<TT>("2024-11-05T12:00:00");
 
 --------------------------------------------------------------------------------
 
@@ -79,6 +79,44 @@ param t_tt: Datetime<TT> = epoch("2024-11-05T12:00:00", TT);
                 (identifier)))))))
     (fn_call
       (identifier)
-      (string_literal)
-      (ident_path
-        (identifier)))))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (string_literal))))
+
+================================================================================
+Same-line Unicode string literal
+================================================================================
+
+param label: Dimensionless = "Δv 🚀";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (string_literal)))
+
+================================================================================
+Physical line breaks terminate string literals
+================================================================================
+
+node label: Dimensionless = "first
+second";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (ERROR
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (ERROR
+      (UNEXPECTED '\n'))
+    (identifier)
+    (UNEXPECTED '\n')))

@@ -132,18 +132,18 @@ node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
     (identifier)
     (line_comment)
     (line_comment)
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
           (identifier))))
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
           (identifier))))
     (line_comment)
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
