@@ -128,7 +128,7 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
     (key_form_expr
       (ident_path
         (identifier))
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term

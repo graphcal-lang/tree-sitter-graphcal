@@ -461,12 +461,12 @@ module.exports = grammar({
     // import nasa.rocket as r;                            -- module import with alias
     // import nasa.rocket.{ type Orbit, compute_thrust as ct }; -- brace-list selector
     //
-    // `pub import ...` re-exports. The brace-list and `as` forms are
-    // mutually exclusive. All paths are dot-separated and absolute from
+    // Import use-sites have no leading visibility. Re-exports must mark
+    // individual items `pub` in a brace list. The brace-list and `as` forms
+    // are mutually exclusive. All paths are dot-separated and absolute from
     // the package root; no file-path strings, no `..`, no `/`.
     import_declaration: $ => seq(
       repeat($.attribute),
-      optional($.visibility),
       "import",
       field("path", $.module_path),
       optional($._import_tail),
@@ -565,10 +565,11 @@ module.exports = grammar({
     // include nasa.rocket.compute_thrust(args).{ thrust };             -- brace-list output selector
     //
     // The `(args)` parameter binding list is mandatory (may be empty).
-    // The brace-list and `as` forms are mutually exclusive.
+    // Include use-sites have no leading visibility; only individual brace-list
+    // outputs may be marked `pub`. The brace-list and `as` forms are mutually
+    // exclusive.
     include_declaration: $ => seq(
       repeat($.attribute),
-      optional($.visibility),
       "include",
       field("path", $.module_path),
       field("param_bindings", $.include_param_bindings),
@@ -1400,7 +1401,7 @@ module.exports = grammar({
       $.number,
       $.boolean,
       $.string_literal,
-      $.unit_literal,
+      $.quantity_literal,
       $.graph_ref,
       $.inline_dag_call,
       $.map_literal,
@@ -1409,10 +1410,10 @@ module.exports = grammar({
       $.ident_path,
     ),
 
-    // Unit-annotated literal: 400 km, 9.80665 m/s^2
-    // Uses dynamic precedence to prefer unit_literal over bare number
-    // when followed by an identifier in expression context.
-    unit_literal: $ => prec.dynamic(1, seq(
+    // Quantity literal: 400 km, 9.80665 m/s^2
+    // Uses dynamic precedence to prefer quantity_literal over bare number
+    // when followed by a unit expression in expression context.
+    quantity_literal: $ => prec.dynamic(1, seq(
       field("value", $.number),
       field("unit", $.unit_expr),
     )),
@@ -1523,7 +1524,8 @@ module.exports = grammar({
 
     boolean: $ => choice("true", "false"),
 
-    string_literal: $ => /"[^"]*"/,
+    // Strings cannot contain physical line breaks.
+    string_literal: $ => /"[^"\r\n]*"/,
 
     identifier: $ => /[a-zA-Z][a-zA-Z0-9_]*/,
 

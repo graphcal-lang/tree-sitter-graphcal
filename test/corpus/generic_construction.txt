@@ -41,21 +41,21 @@ param pos_eci: Vec3<Length, Eci> = Vec3<Length, Eci>(x: 6878.0 km, y: 0.0 km, z:
                 (identifier))))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
               (identifier)))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
               (identifier)))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
@@ -92,21 +92,21 @@ param pos3_default: Pos3<Length> = Pos3<Length>(x: 10.0 km, y: 20.0 km, z: 30.0 
                 (identifier))))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
               (identifier)))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
               (identifier)))))
       (field_init
         (identifier)
-        (unit_literal
+        (quantity_literal
           (number)
           (unit_expr
             (unit_term
@@ -166,7 +166,7 @@ node gt: Bool = @m > 2.0 kg;
     (binary_expr
       (graph_ref
         (identifier))
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term

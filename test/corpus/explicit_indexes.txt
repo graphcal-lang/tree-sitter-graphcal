@@ -10,31 +10,31 @@ index ByCount = linspace(0.0 s, 1.0 s, points: N + 1);
 (source_file
   (index_declaration
     (identifier)
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
           (identifier))))
     (unary_expr
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term
             (identifier)))))
     (unary_expr
-      (unit_literal
+      (quantity_literal
         (number)
         (unit_expr
           (unit_term
             (identifier))))))
   (index_declaration
     (identifier)
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
           (identifier))))
-    (unit_literal
+    (quantity_literal
       (number)
       (unit_expr
         (unit_term
