@@ -227,11 +227,15 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "ident_path",
+          "named": true
+        },
+        {
+          "type": "qualified_variant",
           "named": true
         }
       ]
@@ -643,6 +647,10 @@
             "named": true
           },
           {
+            "type": "qualified_variant",
+            "named": true
+          },
+          {
             "type": "type_application",
             "named": true
           }
@@ -821,6 +829,21 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "dag_call_path",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -1701,17 +1724,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "path_segment": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -2074,7 +2087,7 @@
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -2084,10 +2097,31 @@
   {
     "type": "ident_path",
     "named": true,
-    "fields": {},
+    "fields": {
+      "member": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "namespace": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "namespace_path",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
-      "multiple": true,
-      "required": true,
+      "multiple": false,
+      "required": false,
       "types": [
         {
           "type": "identifier",
@@ -2405,6 +2439,16 @@
     "type": "include_param_binding",
     "named": true,
     "fields": {
+      "category": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "input_binding_category",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
@@ -3168,6 +3212,10 @@
             "named": true
           },
           {
+            "type": "qualified_variant",
+            "named": true
+          },
+          {
             "type": "type_application",
             "named": true
           }
@@ -3203,16 +3251,6 @@
           }
         ]
       },
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
       "output": {
         "multiple": false,
         "required": true,
@@ -3223,17 +3261,22 @@
           }
         ]
       },
-      "path_segment": {
-        "multiple": true,
-        "required": false,
+      "path": {
+        "multiple": false,
+        "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "dag_call_path",
             "named": true
           }
         ]
       }
     }
+  },
+  {
+    "type": "input_binding_category",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "key_form_expr",
@@ -3967,9 +4010,19 @@
     "type": "match_pattern",
     "named": true,
     "fields": {
+      "label": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "qualified_variant",
+            "named": true
+          }
+        ]
+      },
       "path": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "ident_path",
@@ -4208,7 +4261,7 @@
       "required": false,
       "types": [
         {
-          "type": "qualified_variant",
+          "type": "identifier",
           "named": true
         }
       ]
@@ -4322,6 +4375,21 @@
       "types": [
         {
           "type": "multi_table_body",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "namespace_path",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -5038,8 +5106,18 @@
     "type": "qualified_variant",
     "named": true,
     "fields": {
-      "path": {
-        "multiple": true,
+      "index": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "ident_path",
+            "named": true
+          }
+        ]
+      },
+      "variant": {
+        "multiple": false,
         "required": true,
         "types": [
           {
@@ -5525,22 +5603,12 @@
           }
         ]
       },
-      "path_segment": {
-        "multiple": true,
-        "required": false,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
       "type": {
         "multiple": false,
         "required": true,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -6475,6 +6543,10 @@
           "named": true
         },
         {
+          "type": "qualified_variant",
+          "named": true
+        },
+        {
           "type": "type_application",
           "named": true
         }
@@ -6948,22 +7020,12 @@
     "type": "unit_term",
     "named": true,
     "fields": {
-      "module": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
       "name": {
         "multiple": false,
         "required": false,
         "types": [
           {
-            "type": "identifier",
+            "type": "ident_path",
             "named": true
           }
         ]
@@ -7075,6 +7137,10 @@
   },
   {
     "type": ":",
+    "named": false
+  },
+  {
+    "type": "::",
     "named": false
   },
   {

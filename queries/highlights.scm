@@ -92,7 +92,8 @@
 [ "{" "}" ] @punctuation.bracket
 [ "[" "]" ] @punctuation.bracket
 
-[ ";" "," ":" "." "|" ] @punctuation.delimiter
+[ ";" "," ":" "." "::" "|" ] @punctuation.delimiter
+"#" @punctuation.special
 
 ; ---------------------------------------------------------------
 ; Declarations — names
@@ -118,10 +119,10 @@
 (index_declaration name: (identifier) @type)
 
 
-; import nasa.rocket.{delta_v}
+; import nasa.rocket::{delta_v}
 (import_declaration path: (module_path) @module)
 
-; include nasa.rocket(params).{delta_v}
+; include nasa.rocket(params)::{delta_v}
 (include_declaration path: (module_path) @module)
 
 ; Highlight individual identifiers in a module path so the
@@ -170,7 +171,7 @@
 ; Types in annotations
 ; ---------------------------------------------------------------
 
-; Type applications and indexed type index names: module.Vec3<Length>, Velocity[module.Maneuver]
+; Type applications and indexed type index names: module::Vec3<Length>, Velocity[module::Maneuver]
 (type_application name: (ident_path (identifier) @type))
 (indexed_type (ident_path (identifier) @type))
 
@@ -193,38 +194,31 @@
 (nat_add_expr (identifier) @type)
 (nat_mul_expr (identifier) @type)
 
-; Dimension terms in type annotations (Length, module.Time, Mass, etc.)
+; Dimension terms in type annotations (Length, module::Time, Mass, etc.)
 (dim_term (ident_path (identifier) @type))
 
-; Unit terms in unit expressions: the leaf is the unit, an optional
-; single qualifier is a module alias (u.mile)
-(unit_term name: (identifier) @type)
-(unit_term module: (identifier) @module)
+; Unit terms use local or explicit namespace-member paths (u::mile).
+(unit_term name: (ident_path (identifier) @type))
 
 ; ---------------------------------------------------------------
 ; Function calls and definitions
 ; ---------------------------------------------------------------
 
 
-; fn/constructor calls: sqrt(x), Pick(...), module.Pick(...).
-(fn_call name: (identifier) @function.call)
-(fn_call path_segment: (identifier) @function.call)
+; fn calls: sqrt(x), module::function(...).
+(fn_call name: (ident_path (identifier) @function.call))
 
 ; ---------------------------------------------------------------
-; Graph references: @name, @dag(args).out, @module.dag(args).out
+; Graph references: @name, @instance::out, @dag(args)::out, @module.dag(args)::out
 ; ---------------------------------------------------------------
 
-(graph_ref "@" @operator name: (identifier) @variable)
+(graph_ref "@" @operator name: (ident_path (identifier) @variable))
 
-; Inline DAG invocation: `@<name>(args).<out>` or
-; `@<name>(.<seg>)+ (args).<out>`. The leaf segment of the path (the DAG
-; name in call position) is highlighted as a function reference; any
-; preceding segments are module aliases brought into scope by `import`;
-; the projected output name after the closing `).` is highlighted as a
-; variable.
+; Inline DAG invocation: `@<name>(args)::<out>` or
+; `@<name>(.<seg>)+(args)::<out>`. Dotted path segments name DAGs; the
+; projected output after `)::` is a variable.
 (inline_dag_call "@" @operator)
-(inline_dag_call name: (identifier) @function.call !path_segment)
-(inline_dag_call name: (identifier) @module path_segment: (identifier) @function.call)
+(inline_dag_call path: (dag_call_path (identifier) @function.call))
 (inline_dag_call output: (identifier) @variable)
 
 ; ---------------------------------------------------------------
@@ -251,7 +245,8 @@
 ; include nasa.rocket(args) as alias;
 (include_declaration alias: (identifier) @module)
 
-; Param bindings in include declarations: include "path"(name: expr) { ... }
+; DAG input bindings: unmarked params or explicitly marked Static inputs.
+(include_param_binding category: (input_binding_category) @keyword)
 (include_param_binding name: (identifier) @variable)
 (include_param_binding ":" @operator)
 
@@ -259,9 +254,8 @@
 ; Struct and index usage
 ; ---------------------------------------------------------------
 
-; Struct construction: TransferResult(field: expr, ...) or module.TransferResult(...)
-(struct_construction type: (identifier) @type)
-(struct_construction path_segment: (identifier) @type)
+; Struct construction: TransferResult(field: expr, ...) or module::TransferResult(...)
+(struct_construction type: (ident_path (identifier) @type))
 
 ; Field access: @transfer.dv1
 (field_access field: (identifier) @property)
@@ -272,9 +266,9 @@
 ; Field initializer: dv1: expr
 (field_init name: (identifier) @property)
 
-; Qualified variant: Maneuver.Departure or module.Maneuver.Departure.
-; The parser preserves the full path; semantic resolution decides owner vs leaf.
-(qualified_variant path: (identifier) @constant)
+; Owner-qualified index label: Maneuver#Departure or module::Maneuver#Departure.
+(qualified_variant index: (ident_path (identifier) @type))
+(qualified_variant variant: (identifier) @constant)
 
 ; Tagged-union constructor names: type Foo { A(...), B }
 (constructor_declaration name: (identifier) @type)
@@ -286,7 +280,7 @@
 ; Match expressions
 ; ---------------------------------------------------------------
 
-; Match pattern path: Impulsive(...) =>, Maneuver.Departure =>, module.Pick(...) =>
+; Match patterns: Impulsive(...) =>, Maneuver#Departure =>, module::Pick(...) =>
 (match_pattern path: (ident_path (identifier) @type))
 
 ; Wildcard pattern: _
@@ -336,17 +330,17 @@
 ; Attributes
 ; ---------------------------------------------------------------
 
-; #[assumes(x, y)], #[expected_fail(Mode.Boost)]
+; #[assumes(x, y)], #[expected_fail(Mode#Boost)]
 (attribute "#" @punctuation.special)
 (attribute "[" @punctuation.special)
 (attribute "]" @punctuation.special)
 (attribute name: (identifier) @attribute)
 (attribute_finite_position "#" @punctuation.special)
 
-; Attribute path arguments: ident, Index.Variant
-(attribute_path (identifier) @variable)
+; Attribute path arguments: ident, Index#Variant
+(attribute_path (ident_path (identifier) @variable))
 
-; Attribute group arguments: (Index.A, Index.B)
+; Attribute group arguments: (Index#A, Index#B)
 (attribute_group "(" @punctuation.bracket)
 (attribute_group ")" @punctuation.bracket)
 
@@ -400,7 +394,7 @@
 ; Table expressions
 ; ---------------------------------------------------------------
 
-; Index names in table[Index1, module.Index2]: highlighted as types
+; Index names in table[Index1, module::Index2]: highlighted as types
 (table_expr index: (ident_path (identifier) @type))
 (table_slice_label "#" @punctuation.special)
 
@@ -412,15 +406,15 @@
 
 ; Multi-decl (issue #481) surface form — mirror single-decl highlights.
 
-; Shared axis names in table[I1, module.I2, ..., (slots)]: highlighted as types
+; Shared axis names in table[I1, module::I2, ..., (slots)]: highlighted as types
 (multi_table_expr shared_axis: (ident_path (identifier) @type))
 
-; Extra-axis names inside the slot tuple `(_, _, module.ExtraAxis)`: highlighted
+; Extra-axis names inside the slot tuple `(_, _, module::ExtraAxis)`: highlighted
 ; as types. (`_` placeholders are a literal token, not an identifier.)
 (slot_axis_entry (ident_path (identifier) @type))
 
-; Heterogeneous header labels use qualified `Axis.Variant` syntax and are
-; covered by the `qualified_variant` rule above. `_` remains a literal token.
+; Heterogeneous header labels are contextual bare identifiers; `_` remains a
+; literal token.
 
 ; Row labels in multi-decl data rows.
 (multi_data_row row_label: (identifier) @constant)

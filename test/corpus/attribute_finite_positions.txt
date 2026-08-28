@@ -29,7 +29,7 @@ assert single_finite = for i: Fin(2) { i == 0 };
 Mixed tuple attribute argument with Fin position
 ================================================================================
 
-#[expected_fail((Mode.Boost, #1))]
+#[expected_fail((Mode#Boost, #1))]
 assert mixed = @x == 0;
 
 --------------------------------------------------------------------------------
@@ -40,13 +40,16 @@ assert mixed = @x == 0;
       (identifier)
       (attribute_group
         (attribute_path
-          (identifier)
-          (identifier))
+          (qualified_variant
+            (ident_path
+              (identifier))
+            (identifier)))
         (attribute_finite_position
           (nat_literal))))
     (identifier)
     (assert_body
       (binary_expr
         (graph_ref
-          (identifier))
+          (ident_path
+            (identifier)))
         (number)))))

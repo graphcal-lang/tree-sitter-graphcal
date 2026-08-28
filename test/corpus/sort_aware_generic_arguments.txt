@@ -113,7 +113,8 @@ node parsed_but_semantically_rejected: Dimensionless = sqrt<1_000>(4.0);
                 (ident_path
                   (identifier))))))))
     (struct_construction
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dimensionless)))
@@ -134,7 +135,8 @@ node parsed_but_semantically_rejected: Dimensionless = sqrt<1_000>(4.0);
       (field_init
         (identifier)
         (struct_construction
-          (identifier)
+          (ident_path
+            (identifier))
           (generic_arg
             (nat_literal))
           (field_init
@@ -145,7 +147,8 @@ node parsed_but_semantically_rejected: Dimensionless = sqrt<1_000>(4.0);
     (type_expr
       (dimensionless))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (nat_literal))
       (number))))

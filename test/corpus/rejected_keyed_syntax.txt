@@ -21,7 +21,7 @@ type Result {
   (ERROR))
 
 ================================================================================
-Bare heterogeneous header labels are rejected
+Contextual heterogeneous header labels are accepted
 ================================================================================
 
 param scalar: Dimensionless[Row],
@@ -65,7 +65,7 @@ param enabled: Bool[Row, Mode]
         (multi_single
           (multi_header_row
             (multi_header_cell)
-            (ERROR
+            (multi_header_cell
               (identifier)))
           (multi_data_row
             (identifier)

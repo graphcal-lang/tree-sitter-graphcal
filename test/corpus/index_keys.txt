@@ -5,7 +5,7 @@ Index key types in annotations
 index Maneuver = { Departure, Correction };
 node critical: Key<Maneuver> = argmax(@delta_v);
 node second: Key<Fin(3)> = key(Fin(3), 1);
-node remote: Key<mission.Maneuver> = argmax(@dv);
+node remote: Key<mission::Maneuver> = argmax(@dv);
 node grid: Key<TimeStep>[Maneuver] = for m: Maneuver { argmax(@v) };
 type Holder<I: Index> { Holder(slot: Key<I>) }
 
@@ -29,9 +29,11 @@ type Holder<I: Index> { Holder(slot: Key<I>) }
                 (ident_path
                   (identifier))))))))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -52,12 +54,15 @@ type Holder<I: Index> { Holder(slot: Key<I>) }
             (dim_expr
               (dim_term
                 (ident_path
-                  (identifier)
+                  (namespace_path
+                    (identifier))
                   (identifier))))))))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -77,9 +82,11 @@ type Holder<I: Index> { Holder(slot: Key<I>) }
         (ident_path
           (identifier)))
       (fn_call
-        (identifier)
+        (ident_path
+          (identifier))
         (graph_ref
-          (identifier)))))
+          (ident_path
+            (identifier))))))
   (type_declaration
     (identifier)
     (generic_params
@@ -109,7 +116,7 @@ node second: Key<Fin(8)> = key(Fin(8), 1);
 node channel: Key<Fin(8)> = fin_key(Fin(8), @requested);
 node before_event: Key<TimeStep> = floor_key(TimeStep, @event_time);
 node after_event: Key<TimeStep> = ceil_key(TimeStep, @event_time);
-node closest: Key<TimeStep> = nearest_key(mission.TimeStep, @event_time);
+node closest: Key<TimeStep> = nearest_key(mission::TimeStep, @event_time);
 node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
 
 --------------------------------------------------------------------------------
@@ -132,7 +139,8 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
         (number)
         (unit_expr
           (unit_term
-            (identifier))))))
+            (ident_path
+              (identifier)))))))
   (node_declaration
     (identifier)
     (type_expr
@@ -155,7 +163,8 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
       (finite_index
         (nat_literal))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -170,7 +179,8 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
       (ident_path
         (identifier))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -185,7 +195,8 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
       (ident_path
         (identifier))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -198,10 +209,12 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
                   (identifier))))))))
     (key_form_expr
       (ident_path
-        (identifier)
+        (namespace_path
+          (identifier))
         (identifier))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
@@ -211,21 +224,23 @@ node selected: Pressure = @readings[fin_key(Fin(8), @requested)];
             (identifier)))))
     (index_access
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (index_arg
         (key_form_expr
           (finite_index
             (nat_literal))
           (graph_ref
-            (identifier)))))))
+            (ident_path
+              (identifier))))))))
 
 ================================================================================
 Qualified labels in expression position
 ================================================================================
 
-node fallback: Key<Maneuver> = Maneuver.Departure;
+node fallback: Key<Maneuver> = Maneuver#Departure;
 node is_critical: Bool[Maneuver] = for m: Maneuver { m == @critical };
-node matched: Bool = @choice == Maneuver.Departure;
+node matched: Bool = @choice == Maneuver#Departure;
 
 --------------------------------------------------------------------------------
 
@@ -240,8 +255,9 @@ node matched: Bool = @choice == Maneuver.Departure;
               (dim_term
                 (ident_path
                   (identifier))))))))
-    (ident_path
-      (identifier)
+    (qualified_variant
+      (ident_path
+        (identifier))
       (identifier)))
   (node_declaration
     (identifier)
@@ -259,16 +275,19 @@ node matched: Bool = @choice == Maneuver.Departure;
         (ident_path
           (identifier))
         (graph_ref
-          (identifier)))))
+          (ident_path
+            (identifier))))))
   (node_declaration
     (identifier)
     (type_expr
       (bool_type))
     (binary_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (qualified_variant
-        (identifier)
+        (ident_path
+          (identifier))
         (identifier)))))
 
 ================================================================================
@@ -278,7 +297,7 @@ Key formers are ordinary identifiers outside call heads
 param key: Dimensionless = 1.0;
 node fin_key: Dimensionless = key;
 node ratio: Dimensionless = key / fin_key;
-node qualified: Dimensionless = plugin.key(1.0);
+node qualified: Dimensionless = plugin::key(1.0);
 unit nearest_key: Dimensionless = 1.0 floor_key;
 node generic: Dimensionless = ceil_key<Length>();
 
@@ -310,8 +329,10 @@ node generic: Dimensionless = ceil_key<Length>();
     (type_expr
       (dimensionless))
     (fn_call
-      (identifier)
-      (identifier)
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
       (number)))
   (unit_declaration
     (identifier)
@@ -323,13 +344,15 @@ node generic: Dimensionless = ceil_key<Length>();
       (number)
       (unit_expr
         (unit_term
-          (identifier)))))
+          (ident_path
+            (identifier))))))
   (node_declaration
     (identifier)
     (type_expr
       (dimensionless))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr

@@ -33,17 +33,17 @@ type Result {
 Qualified table axes, slices, and heterogeneous headers
 ================================================================================
 
-param cube: Dimensionless[mission.Scenario, mission.Row, mission.Column] =
-  table[mission.Scenario, mission.Row, mission.Column] {
-    [mission.Scenario.Nominal]
+param cube: Dimensionless[mission::Scenario, mission::Row, mission::Column] =
+  table[mission::Scenario, mission::Row, mission::Column] {
+    [mission::Scenario#Nominal]
     : X;
     A: 1.0;
   };
 
-param scalar: Dimensionless[mission.Row],
-param enabled: Bool[mission.Row, mission.Mode]
-  = table[mission.Row, (_, mission.Mode)] {
-      : _, mission.Mode.Safe;
+param scalar: Dimensionless[mission::Row],
+param enabled: Bool[mission::Row, mission::Mode]
+  = table[mission::Row, (_, mission::Mode)] {
+      : _, Safe;
       A: 1.0, true;
   };
 
@@ -56,30 +56,38 @@ param enabled: Bool[mission.Row, mission.Mode]
       (indexed_type
         (dimensionless)
         (ident_path
-          (identifier)
+          (namespace_path
+            (identifier))
           (identifier))
         (ident_path
-          (identifier)
+          (namespace_path
+            (identifier))
           (identifier))
         (ident_path
-          (identifier)
+          (namespace_path
+            (identifier))
           (identifier))))
     (table_expr
       (ident_path
-        (identifier)
+        (namespace_path
+          (identifier))
         (identifier))
       (ident_path
-        (identifier)
+        (namespace_path
+          (identifier))
         (identifier))
       (ident_path
-        (identifier)
+        (namespace_path
+          (identifier))
         (identifier))
       (table_body
         (table_slice_section
           (table_slice_label
             (qualified_variant
-              (identifier)
-              (identifier)
+              (ident_path
+                (namespace_path
+                  (identifier))
+                (identifier))
               (identifier)))
           (table_single
             (table_header_row
@@ -95,7 +103,8 @@ param enabled: Bool[mission.Row, mission.Mode]
         (indexed_type
           (dimensionless)
           (ident_path
-            (identifier)
+            (namespace_path
+              (identifier))
             (identifier)))))
     (multi_decl_slot
       (multi_decl_kind)
@@ -104,30 +113,31 @@ param enabled: Bool[mission.Row, mission.Mode]
         (indexed_type
           (bool_type)
           (ident_path
-            (identifier)
+            (namespace_path
+              (identifier))
             (identifier))
           (ident_path
-            (identifier)
+            (namespace_path
+              (identifier))
             (identifier)))))
     (multi_table_expr
       (ident_path
-        (identifier)
+        (namespace_path
+          (identifier))
         (identifier))
       (slot_tuple
         (slot_axis_entry)
         (slot_axis_entry
           (ident_path
-            (identifier)
+            (namespace_path
+              (identifier))
             (identifier))))
       (multi_table_body
         (multi_single
           (multi_header_row
             (multi_header_cell)
             (multi_header_cell
-              (qualified_variant
-                (identifier)
-                (identifier)
-                (identifier))))
+              (identifier)))
           (multi_data_row
             (identifier)
             (number)

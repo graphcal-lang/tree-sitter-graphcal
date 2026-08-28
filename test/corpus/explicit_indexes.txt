@@ -14,31 +14,36 @@ index ByCount = linspace(0.0 s, 1.0 s, points: N + 1);
       (number)
       (unit_expr
         (unit_term
-          (identifier))))
-    (unary_expr
-      (quantity_literal
-        (number)
-        (unit_expr
-          (unit_term
+          (ident_path
             (identifier)))))
     (unary_expr
       (quantity_literal
         (number)
         (unit_expr
           (unit_term
-            (identifier))))))
+            (ident_path
+              (identifier))))))
+    (unary_expr
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier)))))))
   (index_declaration
     (identifier)
     (quantity_literal
       (number)
       (unit_expr
         (unit_term
-          (identifier))))
+          (ident_path
+            (identifier)))))
     (quantity_literal
       (number)
       (unit_expr
         (unit_term
-          (identifier))))
+          (ident_path
+            (identifier)))))
     (nat_add_expr
       (identifier)
       (nat_literal))))

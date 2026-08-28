@@ -5,7 +5,7 @@ Dimension-aware complex types
 type Phasor<D: Dim> { Phasor(value: Complex<D>) }
 index Sample = { A };
 node z: Complex<Length> = complex(3.0 m, 4.0 m);
-node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
+node rates: Complex<Length / Time>[Sample] = { Sample#A: to_complex(1.0 m/s) };
 
 --------------------------------------------------------------------------------
 
@@ -44,17 +44,20 @@ node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
                 (ident_path
                   (identifier))))))))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (quantity_literal
         (number)
         (unit_expr
           (unit_term
-            (identifier))))
+            (ident_path
+              (identifier)))))
       (quantity_literal
         (number)
         (unit_expr
           (unit_term
-            (identifier))))))
+            (ident_path
+              (identifier)))))))
   (node_declaration
     (identifier)
     (type_expr
@@ -74,14 +77,18 @@ node rates: Complex<Length / Time>[Sample] = { Sample.A: to_complex(1.0 m/s) };
     (map_literal
       (map_entry
         (qualified_variant
-          (identifier)
+          (ident_path
+            (identifier))
           (identifier))
         (fn_call
-          (identifier)
+          (ident_path
+            (identifier))
           (quantity_literal
             (number)
             (unit_expr
               (unit_term
-                (identifier))
+                (ident_path
+                  (identifier)))
               (unit_term
-                (identifier)))))))))
+                (ident_path
+                  (identifier))))))))))

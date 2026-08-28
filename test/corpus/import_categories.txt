@@ -2,7 +2,7 @@
 Selective imports declare non-term categories explicitly
 ================================================================================
 
-import finance.models.{
+import finance.models::{
     pub dim Information,
     unit JPY as yen,
     pub index Category,
@@ -35,7 +35,7 @@ import finance.models.{
         (identifier)))))
 
 ================================================================================
-Leading visibility on an import is rejected
+Whole-DAG imports may be public
 ================================================================================
 
 pub import finance.models;
@@ -43,7 +43,22 @@ pub import finance.models;
 --------------------------------------------------------------------------------
 
 (source_file
+  (import_declaration
+    (module_path
+      (identifier)
+      (identifier))))
+
+================================================================================
+Bindable visibility on an import is rejected
+================================================================================
+
+pub(bind) import finance.models;
+
+--------------------------------------------------------------------------------
+
+(source_file
   (ERROR
+    (visibility)
     (identifier)
     (identifier)
     (identifier)))
