@@ -2413,6 +2413,16 @@
           }
         ]
       },
+      "category": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "import_category",
+            "named": true
+          }
+        ]
+      },
       "name": {
         "multiple": false,
         "required": true,
