@@ -55,32 +55,7 @@ module.exports = grammar({
     // annotation. The disambiguator is the trailing `,`.
     [$.multi_decl_kind, $.node_declaration],
     [$.multi_decl_kind, $.param_declaration],
-    // `IDENT . IDENT` after `import` / `include` could either continue
-    // a module_path or finish the path and stand at the start of a
-    // `. { ... }` brace-list tail. The disambiguator (1-token lookahead
-    // past the `.`) requires GLR — `IDENT` continues, `{` starts a tail.
-    [$.module_path],
-    // `@<name>` could be the start of a bare `graph_ref` (with field
-    // projections handled by `field_access`) or an `inline_dag_call`
-    // (with multi-segment path before `(args)`). The disambiguator is
-    // whether `(args).<out>` eventually follows the path.
-    [$.graph_ref, $.inline_dag_call],
-    // `IDENT . IDENT` could be either a `qualified_variant` (variant
-    // ref or qualified const ref) or a `_primary_expr` (the leading
-    // `IDENT`) followed by a postfix `field_access`. The name resolver
-    // distinguishes them (variant when LHS is a known index, otherwise
-    // a qualified const). Both parses are accepted by the GLR parser
-    // and any downstream consumer reads `qualified_variant` when present.
-    [$.ident_path, $.qualified_variant],
-    [$.ident_path, $.qualified_variant, $.fn_call, $.struct_construction],
-    // `IDENT < …` in expression position is either a comparison (reduce
-    // the `IDENT` to `ident_path`) or the start of a turbofish generic
-    // argument list (`Vec3<Length, Eci>(x: …)`, `f<Dimensionless>(x)`).
-    // The GLR parser keeps both alive; the turbofish branch carries
-    // dynamic precedence so it wins when both parses complete (the
-    // reference grammar's comparisons are non-chaining, so the chained
-    // `(a < b) > (c)` reading is never the intended one).
-    [$.ident_path, $.fn_call, $.struct_construction],
+    [$.namespace_path, $.ident_path, $.dag_call_path],
     // Keep both parses alive after a unit term followed by `*` or `/`.
     // The next token distinguishes a compound unit (`m / s`) from
     // quantity arithmetic (`1.0 m / 2.0 s`).
@@ -117,7 +92,7 @@ module.exports = grammar({
       $.layer_declaration,
     ),
 
-    // #[name] or #[name(arg1, arg2)] or #[name(Index.Variant, (A.X, B.Y))]
+    // #[name] or #[name(arg1, arg2)] or #[name(Index#Variant, (A#X, B#Y))]
     attribute: $ => seq(
       "#",
       "[",
@@ -144,9 +119,9 @@ module.exports = grammar({
     // Positional key for a Fin axis, matching table slice labels.
     attribute_finite_position: $ => seq("#", $.nat_literal),
 
-    attribute_path: $ => seq(
-      $.identifier,
-      repeat(seq(".", $.identifier)),
+    attribute_path: $ => choice(
+      $.qualified_variant,
+      $.ident_path,
     ),
 
     attribute_group: $ => seq(
@@ -267,7 +242,7 @@ module.exports = grammar({
 
     multi_header_cell: $ => choice(
       "_",
-      $.qualified_variant,
+      $.identifier,
     ),
 
     multi_data_row: $ => seq(
@@ -459,14 +434,15 @@ module.exports = grammar({
 
     // import nasa.rocket;                                 -- bare module import
     // import nasa.rocket as r;                            -- module import with alias
-    // import nasa.rocket.{ type Orbit, compute_thrust as ct }; -- brace-list selector
+    // import nasa.rocket::{ type Orbit, compute_thrust as ct }; -- brace-list selector
     //
-    // Import use-sites have no leading visibility. Re-exports must mark
-    // individual items `pub` in a brace list. The brace-list and `as` forms
+    // Whole-DAG imports may be `pub`; selective re-exports mark individual
+    // items `pub` in the brace list. The brace-list and `as` forms
     // are mutually exclusive. All paths are dot-separated and absolute from
     // the package root; no file-path strings, no `..`, no `/`.
     import_declaration: $ => seq(
       repeat($.attribute),
+      optional("pub"),
       "import",
       field("path", $.module_path),
       optional($._import_tail),
@@ -550,7 +526,7 @@ module.exports = grammar({
     ),
 
     brace_import_list: $ => seq(
-      ".",
+      "::",
       "{",
       optional(seq(
         $.import_item,
@@ -562,7 +538,7 @@ module.exports = grammar({
 
     // include nasa.rocket.compute_thrust(args);                       -- bare include
     // include nasa.rocket.compute_thrust(args) as ct;                 -- include with alias
-    // include nasa.rocket.compute_thrust(args).{ thrust };             -- brace-list output selector
+    // include nasa.rocket.compute_thrust(args)::{ thrust };            -- brace-list output selector
     //
     // The `(args)` parameter binding list is mandatory (may be empty).
     // Include use-sites have no leading visibility; only individual brace-list
@@ -583,7 +559,7 @@ module.exports = grammar({
     ),
 
     brace_include_list: $ => seq(
-      ".",
+      "::",
       "{",
       optional(seq(
         $.include_item,
@@ -593,7 +569,8 @@ module.exports = grammar({
       "}",
     ),
 
-    // Param bindings for include instantiation: (name: expr, ...)
+    // DAG input bindings: unmarked means param; Static inputs require an
+    // explicit `type`, `dim`, or `index` marker.
     // The list may be empty: `include foo();` is valid (matches the
     // EBNF `[ include_param_binding, { ",", ... }, [ "," ] ]`).
     include_param_bindings: $ => seq(
@@ -606,12 +583,14 @@ module.exports = grammar({
       ")",
     ),
 
-    // A single param binding in include: name: expr
     include_param_binding: $ => seq(
+      optional(field("category", $.input_binding_category)),
       field("name", $.identifier),
       ":",
       field("value", $._expr),
     ),
+
+    input_binding_category: _ => choice("type", "dim", "index"),
 
     // dag name { declarations... }
     dag_declaration: $ => seq(
@@ -629,12 +608,6 @@ module.exports = grammar({
     // remaining segments walk the package's module tree (directories,
     // files, and inline `dag` declarations).
     //
-    // The grammar relies on a `[$.module_path]` conflict declaration
-    // (see `conflicts`) so the GLR parser can keep both "continue the
-    // path" and "stop the path here" branches alive when it sees `.`
-    // after an identifier — disambiguating once it sees the next token
-    // (`IDENT` continues the path; `{` starts an import/include
-    // brace-list tail).
     module_path: $ => seq(
       $.identifier,
       repeat(seq(".", $.identifier)),
@@ -648,9 +621,18 @@ module.exports = grammar({
     // conflict so the GLR parser forks (see `conflicts`). With prec.left
     // the tie at PREC.CALL was resolved statically in favor of the
     // reduce, killing `Vec3<Length, Eci>(x: ...)` in expression position.
-    ident_path: $ => prec(PREC.CALL, seq(
+    namespace_path: $ => seq(
       $.identifier,
       repeat(seq(".", $.identifier)),
+    ),
+
+    ident_path: $ => prec(PREC.CALL, choice(
+      $.identifier,
+      seq(
+        field("namespace", $.namespace_path),
+        "::",
+        field("member", $.identifier),
+      ),
     )),
 
     // Import item with an explicit marker for every non-term namespace.
@@ -883,6 +865,7 @@ module.exports = grammar({
       $.complex_type,
       $.key_type,
       $.type_application,
+      $.qualified_variant,
       $.dim_expr,
     ),
 
@@ -909,7 +892,7 @@ module.exports = grammar({
     domain_bound_key: _$ => choice("min", "max"),
 
     // Sort-aware generic type application: Vec3<Length, ECI>, Fixed<N + 1>,
-    // module.Vec3<Length>. Semantic resolution classifies each argument as
+    // module::Vec3<Length>. Semantic resolution classifies each argument as
     // Dim, Index, Nat, or Type after resolving the applied declaration.
     // Uses dynamic precedence to prefer type_application over parsing `<` as
     // a comparison operator when an identifier path is followed by `<` in type context.
@@ -948,7 +931,7 @@ module.exports = grammar({
     ),
 
     // Built-in index-key reflection type: Key<Maneuver>, Key<Fin(3)>,
-    // Key<mission.Maneuver>, Key<I>. The sole argument must have sort
+    // Key<mission::Maneuver>, Key<I>. The sole argument must have sort
     // Index; bare `Key` is rejected.
     key_type: $ => seq(
       "Key",
@@ -1029,7 +1012,7 @@ module.exports = grammar({
     signed_integer: $ => /-?[0-9][0-9_]*/,
 
     // ---------------------------------------------------------------
-    // Unit expressions: m, m/s^2, kg * m / s^2, u.mile
+    // Unit expressions: m, m/s^2, kg * m / s^2, u::mile
     // ---------------------------------------------------------------
 
     // The optional `1/` prefix is the reciprocal shorthand (e.g. `1/min`);
@@ -1041,14 +1024,11 @@ module.exports = grammar({
       repeat(prec.dynamic(1, seq(choice("*", "/"), $.unit_term))),
     ),
 
-    // A unit reference is a bare IDENT (local declaration, selective
-    // import, or prelude unit) or `alias.unit` for a `pub` unit of a
-    // module imported with an alias. Module aliases are single segments,
-    // so at most one qualifier is allowed (per grammar.ebnf `unit_term`).
+    // A unit reference is a local/prelude name or a member selected through
+    // the same explicit `::` boundary used by every imported category.
     unit_term: $ => prec.right(PREC.POWER + 1, choice(
       seq(
-        optional(seq(field("module", $.identifier), ".")),
-        field("name", $.identifier),
+        field("name", $.ident_path),
         optional(seq("^", $.exponent)),
       ),
       seq("(", $.unit_expr, ")", optional(seq("^", $.exponent))),
@@ -1137,20 +1117,22 @@ module.exports = grammar({
       field("body", $._expr),
     ),
 
-    // Constructor and index-label patterns are both syntactic paths here.
-    // Name resolution decides whether `module.Pick(...)` is a constructor
-    // or whether `module.Phase.Burn` is an index label.
-    match_pattern: $ => seq(
-      field("path", $.ident_path),
-      optional(seq(
-        "(",
+    // `#` selects an index label syntactically. Plain Term paths are
+    // constructor patterns and only they may carry payload bindings.
+    match_pattern: $ => choice(
+      field("label", $.qualified_variant),
+      seq(
+        field("path", $.ident_path),
         optional(seq(
-          $.pattern_binding,
-          repeat(seq(",", $.pattern_binding)),
-          optional(","),
+          "(",
+          optional(seq(
+            $.pattern_binding,
+            repeat(seq(",", $.pattern_binding)),
+            optional(","),
+          )),
+          ")",
         )),
-        ")",
-      )),
+      ),
     ),
 
     pattern_binding: $ => choice(
@@ -1278,7 +1260,7 @@ module.exports = grammar({
       $.table_single,
     ),
 
-    // Slice labels: `Index.Variant` (named axis) or `#N` (Fin axis).
+    // Slice labels: `Index#Variant` (named axis) or `#N` (Fin axis).
     table_slice_label: $ => choice(
       $.qualified_variant,
       seq("#", $.nat_literal),
@@ -1341,18 +1323,18 @@ module.exports = grammar({
 
     index_arg: $ => $._expr,
 
-    // Maneuver.Departure or module.Maneuver.Departure.
+    // Maneuver#Departure or module::Maneuver#Departure.
     qualified_variant: $ => prec.left(seq(
-      field("path", $.identifier),
-      repeat1(seq(".", field("path", $.identifier))),
+      field("index", $.ident_path),
+      "#",
+      field("variant", $.identifier),
     )),
 
     // Function or constructor call. Bare and qualified callees share the
     // same syntactic path shape; argument form and semantic resolution decide
     // whether this is a built-in function call or constructor call.
     fn_call: $ => prec(PREC.CALL, seq(
-      field("name", $.identifier),
-      repeat(seq(".", field("path_segment", $.identifier))),
+      field("name", $.ident_path),
       // The turbofish carries dynamic precedence so that when both the
       // call reading and the (non-chaining in the reference grammar)
       // chained-comparison reading of `f<T>(...)` complete, GLR picks
@@ -1391,12 +1373,8 @@ module.exports = grammar({
 
     // Primary expressions.
     //
-    // `qualified_variant` covers `IDENT.IDENT` in expression position
-    // (variant ref or qualified const ref); the name resolver decides
-    // which. Keeping it here avoids an LR(1) shift-reduce ambiguity
-    // between `field_access` (which would need to reduce the leading
-    // `IDENT` into `_primary_expr` first) and `fn_call` (which would
-    // shift `.` waiting for `(`).
+    // `qualified_variant` carries the explicit `#` index-label boundary;
+    // `ident_path` carries local or `::` Term-member syntax.
     _primary_expr: $ => choice(
       $.number,
       $.boolean,
@@ -1418,40 +1396,43 @@ module.exports = grammar({
       field("unit", $.unit_expr),
     )),
 
-    // Bare graph reference: `@<name>`. Field projections like
-    // `@orbit.altitude` are built atop this via the postfix `field_access`
-    // rule, the same way a non-`@` expression handles `.field`.
+    // Local or explicit member graph reference. Field projections like
+    // `@orbit.altitude` are built atop a local graph_ref via field_access;
+    // `@instance::output` crosses an instance member boundary.
     graph_ref: $ => seq(
       "@",
-      field("name", $.identifier),
+      field("name", $.ident_path),
     ),
 
-    // Inline DAG invocation: `@<name>(args).<out>` for same-file calls,
-    // `@<name>(.<seg>)+ (args).<out>` for cross-file qualified calls.
+    // Inline DAG invocation: `@<name>(args)::<out>` for same-file calls,
+    // `@<name>(.<seg>)+(args)::<out>` for qualified DAG paths.
     //
     // The shape is kept distinct from `graph_ref` so that `@a.b` (no
     // parens) falls through to `field_access(graph_ref(@a), b)` — the
     // GLR parser keeps both interpretations alive past `@a.b` and the
-    // presence of `(args).<out>` is what forces the inline-DAG reading.
+    // presence of `(args)::<out>` is what forces the inline-DAG reading.
     //
     // What `@` enforces is semantic: the post-`@` expression must denote
-    // a *node*, which is why the `.<output>` projection is mandatory.
+    // a graph value, which is why the `::<output>` projection is mandatory.
     // Bare `@dag(args)` (no projection) is rejected for the same reason
     // a multi-segment `@module.dag(args)` is rejected — projection is
     // what turns the DAG instance into a node.
-    inline_dag_call: $ => seq(
-      "@",
-      field("name", $.identifier),
-      repeat(seq(".", field("path_segment", $.identifier))),
-      field("args", $.include_param_bindings),
-      ".",
-      field("output", $.identifier),
-    ),
+    dag_call_path: $ => prec.right(PREC.CALL + 2, seq(
+      $.identifier,
+      repeat(seq(".", $.identifier)),
+    )),
 
-    // TransferResult(dv1: @dv1, dv2: a + b) or module.TransferResult(...)
+    inline_dag_call: $ => prec(PREC.CALL + 1, seq(
+      "@",
+      field("path", $.dag_call_path),
+      field("args", $.include_param_bindings),
+      "::",
+      field("output", $.identifier),
+    )),
+
+    // TransferResult(dv1: @dv1, dv2: a + b) or module::TransferResult(...)
     struct_construction: $ => prec(PREC.CALL, seq(
-      field("type", $.identifier),
-      repeat(seq(".", field("path_segment", $.identifier))),
+      field("type", $.ident_path),
       // Dynamic precedence mirrors fn_call's turbofish (see there). Type and
       // constructor applications intentionally share `generic_arg` syntax.
       optional(prec.dynamic(2, seq(
@@ -1474,8 +1455,8 @@ module.exports = grammar({
       field("value", $._expr),
     ),
 
-    // { Maneuver.Departure: 2.46 km/s, ... }
-    // { (Maneuver.Departure, Phase.Burn): 2.46 km/s, ... }
+    // { Maneuver#Departure: 2.46 km/s, ... }
+    // { (Maneuver#Departure, Phase#Burn): 2.46 km/s, ... }
     map_literal: $ => seq(
       "{",
       optional(seq(

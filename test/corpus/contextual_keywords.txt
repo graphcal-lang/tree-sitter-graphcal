@@ -7,10 +7,10 @@ node unfold: Dimensionless = scan;
 node ratio: Dimensionless = scan / unfold;
 unit step: Dimensionless = 1.0 linspace;
 index linspace = { step };
-import scan.unfold.{linspace as step};
+import scan.unfold::{ linspace as step };
 type scan<unfold: Type> { scan(step: unfold) }
 param value: scan<unfold>[linspace];
-node ordinary: Dimensionless = plugin.scan(1.0);
+node ordinary: Dimensionless = plugin::scan(1.0);
 node generic: Dimensionless = scan<Length>();
 
 --------------------------------------------------------------------------------
@@ -46,7 +46,8 @@ node generic: Dimensionless = scan<Length>();
       (number)
       (unit_expr
         (unit_term
-          (identifier)))))
+          (ident_path
+            (identifier))))))
   (index_declaration
     (identifier)
     (variant
@@ -95,15 +96,18 @@ node generic: Dimensionless = scan<Length>();
     (type_expr
       (dimensionless))
     (fn_call
-      (identifier)
-      (identifier)
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
       (number)))
   (node_declaration
     (identifier)
     (type_expr
       (dimensionless))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr
@@ -136,18 +140,21 @@ node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
       (number)
       (unit_expr
         (unit_term
-          (identifier))))
+          (ident_path
+            (identifier)))))
     (quantity_literal
       (number)
       (unit_expr
         (unit_term
-          (identifier))))
+          (ident_path
+            (identifier)))))
     (line_comment)
     (quantity_literal
       (number)
       (unit_expr
         (unit_term
-          (identifier)))))
+          (ident_path
+            (identifier))))))
   (node_declaration
     (identifier)
     (type_expr
@@ -159,7 +166,8 @@ node recurrence: Dimensionless[TimeStep] = unfold // recurrence form
     (scan_expr
       (line_comment)
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (number)
       (identifier)
       (identifier)

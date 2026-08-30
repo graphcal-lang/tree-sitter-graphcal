@@ -12,14 +12,18 @@ assert close = @actual ~= @expected +/- abs(@expected) * 0.05;
     (assert_body
       (tolerance_assert
         (graph_ref
-          (identifier))
+          (ident_path
+            (identifier)))
         (graph_ref
-          (identifier))
+          (ident_path
+            (identifier)))
         (binary_expr
           (fn_call
-            (identifier)
+            (ident_path
+              (identifier))
             (graph_ref
-              (identifier)))
+              (ident_path
+                (identifier))))
           (number))))))
 
 ================================================================================
@@ -36,8 +40,10 @@ assert old = @actual ~= @expected +/- 5 %;
     (assert_body
       (tolerance_assert
         (graph_ref
-          (identifier))
+          (ident_path
+            (identifier)))
         (graph_ref
-          (identifier))
+          (ident_path
+            (identifier)))
         (number)))
     (ERROR)))

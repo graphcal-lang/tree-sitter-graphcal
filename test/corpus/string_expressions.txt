@@ -38,7 +38,8 @@ param launch: Datetime = datetime("2026-01-15T12:00:00Z");
     (type_expr
       (datetime_type))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (string_literal))))
 
 ================================================================================
@@ -56,7 +57,8 @@ node launch_tokyo: Datetime = @launch -> "Asia/Tokyo";
       (datetime_type))
     (convert_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (string_literal))))
 
 ================================================================================
@@ -78,7 +80,8 @@ param t_tt: Datetime<TT> = epoch<TT>("2024-11-05T12:00:00");
               (ident_path
                 (identifier)))))))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr

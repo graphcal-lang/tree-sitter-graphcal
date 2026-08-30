@@ -16,10 +16,12 @@ node per_minute: Frequency = @f -> 1/min;
             (identifier)))))
     (convert_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (unit_expr
         (unit_term
-          (identifier))))))
+          (ident_path
+            (identifier)))))))
 
 ================================================================================
 Reciprocal unit shorthand in unit declaration
@@ -43,7 +45,8 @@ const unit per_min: Frequency = (1.0 / 60.0) 1/s;
           (number)))
       (unit_expr
         (unit_term
-          (identifier))))))
+          (ident_path
+            (identifier)))))))
 
 ================================================================================
 Quantity division does not extend the left unit expression
@@ -63,12 +66,14 @@ node ratio: Dimensionless = 75.3 cm / 1.0 cm;
         (number)
         (unit_expr
           (unit_term
-            (identifier))))
+            (ident_path
+              (identifier)))))
       (quantity_literal
         (number)
         (unit_expr
           (unit_term
-            (identifier)))))))
+            (ident_path
+              (identifier))))))))
 
 ================================================================================
 Reciprocal unit expression in a quantity literal
@@ -90,7 +95,8 @@ node period: Frequency = 2.0 1/s;
       (number)
       (unit_expr
         (unit_term
-          (identifier))))))
+          (ident_path
+            (identifier)))))))
 
 ================================================================================
 Grouped unit expression in a quantity literal
@@ -114,8 +120,11 @@ node impulse: Momentum = 3.0 (kg * m/s);
         (unit_term
           (unit_expr
             (unit_term
-              (identifier))
+              (ident_path
+                (identifier)))
             (unit_term
-              (identifier))
+              (ident_path
+                (identifier)))
             (unit_term
-              (identifier))))))))
+              (ident_path
+                (identifier)))))))))

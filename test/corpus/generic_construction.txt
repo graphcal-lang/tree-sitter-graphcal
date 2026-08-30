@@ -26,7 +26,8 @@ param pos_eci: Vec3<Length, Eci> = Vec3<Length, Eci>(x: 6878.0 km, y: 0.0 km, z:
                 (ident_path
                   (identifier))))))))
     (struct_construction
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr
@@ -45,21 +46,24 @@ param pos_eci: Vec3<Length, Eci> = Vec3<Length, Eci>(x: 6878.0 km, y: 0.0 km, z:
           (number)
           (unit_expr
             (unit_term
-              (identifier)))))
+              (ident_path
+                (identifier))))))
       (field_init
         (identifier)
         (quantity_literal
           (number)
           (unit_expr
             (unit_term
-              (identifier)))))
+              (ident_path
+                (identifier))))))
       (field_init
         (identifier)
         (quantity_literal
           (number)
           (unit_expr
             (unit_term
-              (identifier))))))))
+              (ident_path
+                (identifier)))))))))
 
 ================================================================================
 Struct construction with a single generic argument
@@ -83,7 +87,8 @@ param pos3_default: Pos3<Length> = Pos3<Length>(x: 10.0 km, y: 20.0 km, z: 30.0 
                 (ident_path
                   (identifier))))))))
     (struct_construction
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr
@@ -96,21 +101,24 @@ param pos3_default: Pos3<Length> = Pos3<Length>(x: 10.0 km, y: 20.0 km, z: 30.0 
           (number)
           (unit_expr
             (unit_term
-              (identifier)))))
+              (ident_path
+                (identifier))))))
       (field_init
         (identifier)
         (quantity_literal
           (number)
           (unit_expr
             (unit_term
-              (identifier)))))
+              (ident_path
+                (identifier))))))
       (field_init
         (identifier)
         (quantity_literal
           (number)
           (unit_expr
             (unit_term
-              (identifier))))))))
+              (ident_path
+                (identifier)))))))))
 
 ================================================================================
 Function call with turbofish generic arguments
@@ -129,7 +137,8 @@ node y: D = smooth<Length>(@x, 5);
           (ident_path
             (identifier)))))
     (fn_call
-      (identifier)
+      (ident_path
+        (identifier))
       (generic_arg
         (type_expr
           (dim_expr
@@ -137,7 +146,8 @@ node y: D = smooth<Length>(@x, 5);
               (ident_path
                 (identifier))))))
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (number))))
 
 ================================================================================
@@ -156,18 +166,22 @@ node gt: Bool = @m > 2.0 kg;
       (bool_type))
     (binary_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (graph_ref
-        (identifier))))
+        (ident_path
+          (identifier)))))
   (node_declaration
     (identifier)
     (type_expr
       (bool_type))
     (binary_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (quantity_literal
         (number)
         (unit_expr
           (unit_term
-            (identifier)))))))
+            (ident_path
+              (identifier))))))))

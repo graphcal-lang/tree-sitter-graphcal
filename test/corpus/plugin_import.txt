@@ -308,10 +308,12 @@ node per_minute: Frequency = @f -> min^-1;
             (identifier)))))
     (convert_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (unit_expr
         (unit_term
-          (identifier)
+          (ident_path
+            (identifier))
           (exponent
             (signed_integer)
             (signed_integer))))))
@@ -324,9 +326,11 @@ node per_minute: Frequency = @f -> min^-1;
             (identifier)))))
     (convert_expr
       (graph_ref
-        (identifier))
+        (ident_path
+          (identifier)))
       (unit_expr
         (unit_term
-          (identifier)
+          (ident_path
+            (identifier))
           (exponent
             (signed_integer)))))))

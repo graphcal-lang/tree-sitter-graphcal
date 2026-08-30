@@ -1,0 +1,177 @@
+================================================================================
+Explicit namespace boundaries and DAG input categories
+================================================================================
+
+pub import pkg.library as lib;
+import plugin "graphcal:demo" as demo {
+  fn lerp<D: Dim>(a: D, b: D, t: Dimensionless) -> D;
+}
+
+type Vehicle { Vehicle }
+index MissionPhase = { A };
+param input: Dimensionless = 1.0;
+
+include pkg.model(
+  type State: Vehicle,
+  dim Distance: Length,
+  index Phase: MissionPhase,
+  input: @input,
+) as configured;
+
+node made: lib::Thing = lib::Thing(value: 1.0);
+node key: Key<lib::Phase> = lib::Phase#A;
+node external: Dimensionless = demo::lerp(1.0, 2.0, 0.5);
+node projected: Dimensionless = @configured::out;
+node called: Dimensionless = @lib.child(input: @input)::out;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (identifier))
+  (plugin_import_declaration
+    (string_literal)
+    (identifier)
+    (extern_fn_declaration
+      (identifier)
+      (extern_generic_binders
+        (extern_generic_binder
+          (identifier)
+          (generic_constraint)))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (extern_fn_param
+        (identifier)
+        (type_expr
+          (dimensionless)))
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))))
+  (type_declaration
+    (identifier)
+    (constructor_list
+      (constructor_declaration
+        (identifier))))
+  (index_declaration
+    (identifier)
+    (variant
+      (identifier)))
+  (param_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (number))
+  (include_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (include_param_bindings
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (ident_path
+          (identifier)))
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (ident_path
+          (identifier)))
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (ident_path
+          (identifier)))
+      (include_param_binding
+        (identifier)
+        (graph_ref
+          (ident_path
+            (identifier)))))
+    (identifier))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (namespace_path
+              (identifier))
+            (identifier)))))
+    (struct_construction
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
+      (field_init
+        (identifier)
+        (number))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (key_type
+        (generic_arg
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (namespace_path
+                    (identifier))
+                  (identifier))))))))
+    (qualified_variant
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
+      (identifier)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (fn_call
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
+      (number)
+      (number)
+      (number)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (graph_ref
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (inline_dag_call
+      (dag_call_path
+        (identifier)
+        (identifier))
+      (include_param_bindings
+        (include_param_binding
+          (identifier)
+          (graph_ref
+            (ident_path
+              (identifier)))))
+      (identifier))))
