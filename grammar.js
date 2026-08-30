@@ -647,11 +647,13 @@ module.exports = grammar({
 
     import_category: _ => choice("type", "dim", "unit", "index"),
 
-    // Include item with optional alias and optional `pub` re-export
-    // marker: name, name as alias, pub name, pub name as alias.
+    // Include item with optional category, alias, and `pub` re-export
+    // marker. Non-term instance members require the same explicit category
+    // markers as selective imports.
     include_item: $ => seq(
       repeat($.attribute),
       optional("pub"),
+      optional(field("category", $.import_category)),
       field("name", $.identifier),
       optional(seq("as", field("alias", $.identifier))),
     ),

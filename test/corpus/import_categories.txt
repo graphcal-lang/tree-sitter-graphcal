@@ -35,6 +35,43 @@ import finance.models::{
         (identifier)))))
 
 ================================================================================
+Selective includes declare non-term categories explicitly
+================================================================================
+
+include finance.models()::{
+    pub dim Information,
+    unit JPY as yen,
+    pub index Category,
+    type Student,
+    pub Student,
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (include_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (include_param_bindings)
+    (brace_include_list
+      (include_item
+        (import_category)
+        (identifier))
+      (include_item
+        (import_category)
+        (identifier)
+        (identifier))
+      (include_item
+        (import_category)
+        (identifier))
+      (include_item
+        (import_category)
+        (identifier))
+      (include_item
+        (identifier)))))
+
+================================================================================
 Whole-DAG imports may be public
 ================================================================================
 

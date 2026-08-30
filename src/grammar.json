@@ -2739,6 +2739,22 @@
           ]
         },
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "category",
+              "content": {
+                "type": "SYMBOL",
+                "name": "import_category"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "FIELD",
           "name": "name",
           "content": {
