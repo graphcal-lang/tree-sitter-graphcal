@@ -45,6 +45,9 @@
 ; in `import plugin "…"` to an anonymous "plugin" node.
 (plugin_import_declaration "plugin" @keyword)
 
+; Only the node-definition marker is a keyword; ordinary `todo` names are not.
+(todo_definition "todo" @keyword)
+
 ; ---------------------------------------------------------------
 ; Literals
 ; ---------------------------------------------------------------

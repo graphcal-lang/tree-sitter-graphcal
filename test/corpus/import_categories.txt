@@ -95,10 +95,7 @@ pub(bind) import finance.models;
 
 (source_file
   (ERROR
-    (visibility)
-    (identifier)
-    (identifier)
-    (identifier)))
+    (visibility)))
 
 ================================================================================
 Leading bindable visibility on an include is rejected
@@ -110,9 +107,4 @@ pub(bind) include finance.models.report() as result;
 
 (source_file
   (ERROR
-    (visibility)
-    (identifier)
-    (identifier)
-    (identifier)
-    (identifier)
-    (identifier)))
+    (visibility)))

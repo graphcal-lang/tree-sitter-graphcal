@@ -11,8 +11,6 @@ type Result {
 (source_file
   (type_declaration
     (identifier)
-    (ERROR
-      (identifier))
     (constructor_list
       (constructor_declaration
         (identifier)))
