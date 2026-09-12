@@ -2131,6 +2131,11 @@
     }
   },
   {
+    "type": "identifier",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "if_expr",
     "named": true,
     "fields": {
@@ -4606,6 +4611,10 @@
             "named": true
           },
           {
+            "type": "todo_definition",
+            "named": true
+          },
+          {
             "type": "unary_expr",
             "named": true
           },
@@ -5075,6 +5084,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "plugin",
+    "named": false,
+    "fields": {}
   },
   {
     "type": "plugin_import_declaration",
@@ -5873,6 +5887,22 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "todo_definition",
+    "named": true,
+    "fields": {
+      "dependency": {
+        "multiple": true,
+        "required": false,
+        "types": [
+          {
+            "type": "graph_ref",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -7322,10 +7352,6 @@
     "named": false
   },
   {
-    "type": "identifier",
-    "named": true
-  },
-  {
     "type": "if",
     "named": false
   },
@@ -7403,10 +7429,6 @@
     "named": false
   },
   {
-    "type": "plugin",
-    "named": false
-  },
-  {
     "type": "point",
     "named": false
   },
@@ -7448,6 +7470,10 @@
   },
   {
     "type": "tick",
+    "named": false
+  },
+  {
+    "type": "todo",
     "named": false
   },
   {

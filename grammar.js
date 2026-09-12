@@ -47,7 +47,7 @@ module.exports = grammar({
     $._contextual_keyword_error_sentinel,
   ],
 
-  word: $ => $.identifier,
+  word: $ => $._identifier,
 
   conflicts: $ => [
     // The first slot of a multi_decl is indistinguishable from a
@@ -149,13 +149,30 @@ module.exports = grammar({
     node_declaration: $ => seq(
       repeat($.attribute),
       optional($.visibility),
-      optional("const"),
-      "node",
-      field("name", $.identifier),
-      optional(seq(":", field("type", $.type_expr))),
-      "=",
-      field("value", $._expr),
+      choice(
+        seq(
+          optional("const"), "node", field("name", $.identifier),
+          optional(seq(":", field("type", $.type_expr))),
+          "=", field("value", $._expr),
+        ),
+        seq(
+          "node", field("name", $.identifier),
+          ":", field("type", $.type_expr),
+          "=", field("value", $.todo_definition),
+        ),
+      ),
       ";",
+    ),
+
+    // A whole-node definition, not an expression or an ordinary call.
+    todo_definition: $ => seq(
+      "todo", "{",
+      optional(seq(
+        field("dependency", $.graph_ref),
+        repeat(seq(",", field("dependency", $.graph_ref))),
+        optional(","),
+      )),
+      "}",
     ),
 
     // Multi-declaration (issue #481): introduce N parallel
@@ -1510,7 +1527,10 @@ module.exports = grammar({
     // Strings cannot contain physical line breaks.
     string_literal: $ => /"[^"\r\n]*"/,
 
-    identifier: $ => /[a-zA-Z][a-zA-Z0-9_]*/,
+    // The lexical word stays separate from the source identifier so the
+    // contextual marker remains a valid name, including immediately after `=`.
+    identifier: $ => choice($._identifier, "todo"),
+    _identifier: $ => /[a-zA-Z][a-zA-Z0-9_]*/,
 
     line_comment: $ => token(seq("//", /.*/)),
   },

@@ -1,0 +1,160 @@
+==================
+TODO empty definition
+==================
+node missing: Length = todo {};
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (todo_definition)))
+
+==================
+TODO exhaustive dependency interface
+==================
+pub node missing: Velocity = todo { @isp, @g0, @module.child::input, };
+
+---
+
+(source_file
+  (node_declaration
+    (visibility)
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (todo_definition
+      (graph_ref
+        (ident_path
+          (identifier)))
+      (graph_ref
+        (ident_path
+          (identifier)))
+      (graph_ref
+        (ident_path
+          (namespace_path
+            (identifier)
+            (identifier))
+          (identifier))))))
+
+==================
+TODO contextual identifiers and ordinary constructor call
+==================
+param todo: Length = 1.0 m;
+node copied: Length = @todo;
+node state: State = todo(value: 1.0 m);
+
+---
+
+(source_file
+  (param_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (quantity_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (ident_path
+            (identifier))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (graph_ref
+      (ident_path
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (struct_construction
+      (ident_path
+        (identifier))
+      (field_init
+        (identifier)
+        (quantity_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (ident_path
+                (identifier)))))))))
+
+==================
+TODO contextual namespace and DAG names
+==================
+node known: Length = @todo()::known;
+node copied: Length = @todo.child::input;
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (inline_dag_call
+      (dag_call_path
+        (identifier))
+      (include_param_bindings)
+      (identifier)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (graph_ref
+      (ident_path
+        (namespace_path
+          (identifier)
+          (identifier))
+        (identifier)))))
+
+==================
+TODO comments and multiline dependencies
+==================
+node missing: Length = todo // marker
+{
+  // before
+  @input, // after
+};
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (todo_definition
+      (line_comment)
+      (line_comment)
+      (graph_ref
+        (ident_path
+          (identifier)))
+      (line_comment))))
