@@ -5,6 +5,17 @@
   lockFileMaintenance: {
     enabled: true,
   },
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Update the Vite+ CLI version pinned in CI",
+      managerFilePatterns: ["/^\\.github/workflows/ci\\.yaml$/"],
+      matchStrings: ['VP_VERSION:\\s*"(?<currentValue>\\d+\\.\\d+\\.\\d+)"'],
+      depNameTemplate: "vite-plus",
+      datasourceTemplate: "npm",
+      versioningTemplate: "semver",
+    },
+  ],
   packageRules: [
     {
       matchUpdateTypes: ["lockFileMaintenance"],
