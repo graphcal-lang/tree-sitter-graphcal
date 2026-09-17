@@ -29,5 +29,9 @@
       "highlights": "queries/highlights.scm",
       "injection-regex": "^(graphcal|gcl)$"
     }
-  ]
+  ],
+  "allowScripts": {
+    "tree-sitter-cli@0.27.0": true
+  },
+  "packageManager": "npm@12.0.2"
 }

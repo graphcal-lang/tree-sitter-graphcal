@@ -8,6 +8,9 @@ on:
 permissions:
   contents: read
 
+env:
+  VP_VERSION: "0.3.2"
+
 jobs:
   typos:
     runs-on: ubuntu-latest
@@ -25,19 +28,26 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: voidzero-dev/setup-vp@9fd26ff49f9b5e6276c2b493da4454ad4527f7f4 # v1.20.0
+        with:
+          version: ${{ env.VP_VERSION }}
+          node-version-file: .node-version
+          run-install: false
+          cache: true
+
       - name: Install npm dependencies
-        run: npm ci
+        run: vp pm ci
 
       - name: Verify package lockfile is up to date
         run: |
-          npm install --package-lock-only --ignore-scripts
+          vp install --lockfile-only --ignore-scripts
           git diff --exit-code -- package-lock.json
 
       - name: Regenerate parser
-        run: npm run generate
+        run: vp run generate
 
       - name: Run corpus tests
-        run: npm test
+        run: vp run test
 
       - name: Select matching Graphcal fixture branch
         id: graphcal_ref
@@ -66,7 +76,7 @@ jobs:
       # Guard against grammar gaps accumulating silently (issue #31):
       # every valid fixture in the matching companion branch, or main, must parse.
       - name: Parse all valid fixtures from graphcal
-        run: npx tree-sitter parse --quiet 'graphcal/tests/fixtures/valid/**/*.gcl'
+        run: vp run parse --quiet 'graphcal/tests/fixtures/valid/**/*.gcl'
 
       # - name: Validate highlight query
       #   working-directory: tree-sitter-graphcal
