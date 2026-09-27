@@ -11,6 +11,7 @@ repos:
         exclude: '^src/(grammar|node-types)\.json$'
       - id: check-toml
       - id: check-yaml
+        args: [--allow-multiple-documents]  # pnpm-lock.yaml
       - id: check-json
       - id: check-added-large-files
         args: [--enforce-all]
