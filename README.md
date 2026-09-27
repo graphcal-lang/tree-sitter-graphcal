@@ -14,20 +14,20 @@ vp pm ci
 
 The project uses Vite+ only for environment management and running existing scripts. There is no local `vite-plus` dependency or Vite/Vitest migration.
 
-Node.js, npm, and Tree-sitter share version pins between local development and CI. CI also pins the global Vite+ CLI:
+Node.js, pnpm, and Tree-sitter share version pins between local development and CI. CI also pins the global Vite+ CLI:
 
 | Tool | Version source |
 | --- | --- |
 | Global Vite+ CLI (CI) | `VP_VERSION` in `.github/workflows/ci.yaml` |
 | Node.js | `.node-version` |
-| npm | `package.json` → `packageManager` |
-| Tree-sitter CLI | `package.json` and `package-lock.json` |
+| pnpm | `package.json` → `packageManager` |
+| Tree-sitter CLI | `package.json` and `pnpm-lock.yaml` |
 
-To match CI's Vite+ version locally, run `vp upgrade <version>` using the workflow's `VP_VERSION` value. This changes your global CLI for other projects too. Vite+ selects and downloads the pinned Node.js and npm versions automatically in managed mode.
+To match CI's Vite+ version locally, run `vp upgrade <version>` using the workflow's `VP_VERSION` value. This changes your global CLI for other projects too. Vite+ selects and downloads the pinned Node.js and pnpm versions automatically in managed mode.
 
-Local versions are selected by Vite+, not enforced by custom scripts. Use `vp env current` to inspect the selected Node.js and npm versions. To return to project pins, clear shell overrides with `vp env use --unset` and unset any `VP_NODE_VERSION`, `VP_NPM_VERSION`, or `VP_PACKAGE_MANAGER` environment overrides.
+Local versions are selected by Vite+, not enforced by custom scripts. Use `vp env current` to inspect the selected Node.js and pnpm versions. To return to project pins, clear shell overrides with `vp env use --unset` and unset any `VP_NODE_VERSION`, `VP_PNPM_VERSION`, or `VP_PACKAGE_MANAGER` environment overrides.
 
-Renovate updates the pins, lockfile, and SHA-pinned GitHub Actions. `VP_VERSION` uses a custom Renovate rule; Node.js and npm use built-in managers. Updates remain subject to the existing seven-day release-age policy and CI checks.
+Renovate updates the pins, lockfile, and SHA-pinned GitHub Actions. `VP_VERSION` uses a custom Renovate rule; Node.js and pnpm use built-in managers. Updates remain subject to the existing seven-day release-age policy and CI checks.
 
 This matches the JavaScript toolchain, not the host OS or C compiler. Corpus tests also require a working C compiler. CI's companion Graphcal fixture branch remains a moving integration-test input.
 
@@ -37,7 +37,7 @@ This matches the JavaScript toolchain, not the host OS or C compiler. Corpus tes
 vp run generate
 ```
 
-`vp pm ci` runs a clean npm install from `package-lock.json`. The Tree-sitter CLI's reviewed install script is explicitly allowed in `package.json` so npm 12 can download its executable. When updating Tree-sitter, review the new install script and refresh its version-specific approval with `npm install-scripts approve tree-sitter-cli`, then rerun `vp pm ci`. Do not approve all dependencies indiscriminately.
+`vp pm ci` runs a frozen-lockfile pnpm install from `pnpm-lock.yaml`. pnpm blocks dependency build scripts unless they are approved, so the Tree-sitter CLI's reviewed install script is explicitly allowed under `allowBuilds` in `pnpm-workspace.yaml` so it can download its executable. When updating Tree-sitter, review the new install script and update its version-specific entry in `allowBuilds` (or run `vp pm approve-builds`), then rerun `vp pm ci`. Do not approve all dependencies indiscriminately.
 
 The `generate` script runs `tree-sitter generate` using `grammar.js` and updates the generated files in `src/`:
 
