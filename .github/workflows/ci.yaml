@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  VP_VERSION: "0.3.3"
+  VP_VERSION: "1.0.0"
 
 jobs:
   typos:
