@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-graphcal",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Tree-sitter grammar for Graphcal (.gcl)",
   "keywords": [
     "graphcal",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "tree-sitter-cli": "0.27.0"
   },
+  "packageManager": "pnpm@12.8.1",
   "tree-sitter": [
     {
       "scope": "source.graphcal",
@@ -29,6 +30,5 @@
       "highlights": "queries/highlights.scm",
       "injection-regex": "^(graphcal|gcl)$"
     }
-  ],
-  "packageManager": "pnpm@12.8.1"
+  ]
 }
