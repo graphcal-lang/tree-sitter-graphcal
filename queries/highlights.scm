@@ -373,6 +373,7 @@
 ; ---------------------------------------------------------------
 
 (figure_declaration name: (identifier) @variable)
+(figure_plots_field "plots" @keyword)
 (figure_named_field name: (identifier) @property)
 
 ; ---------------------------------------------------------------
@@ -380,6 +381,7 @@
 ; ---------------------------------------------------------------
 
 (layer_declaration name: (identifier) @variable)
+(layer_plots_field "plots" @keyword)
 (layer_named_field name: (identifier) @property)
 
 ; ---------------------------------------------------------------
