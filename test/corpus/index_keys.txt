@@ -338,8 +338,7 @@ node generic: Dimensionless = ceil_key<Length>();
     (identifier)
     (dim_expr
       (dim_term
-        (ident_path
-          (identifier))))
+        (dimensionless)))
     (unit_def
       (number)
       (unit_expr
