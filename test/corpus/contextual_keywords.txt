@@ -40,8 +40,7 @@ node generic: Dimensionless = scan<Length>();
     (identifier)
     (dim_expr
       (dim_term
-        (ident_path
-          (identifier))))
+        (dimensionless)))
     (unit_def
       (number)
       (unit_expr

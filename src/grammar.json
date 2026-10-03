@@ -4444,6 +4444,40 @@
             ]
           },
           {
+            "type": "PREC",
+            "value": -1,
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "dimensionless"
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SEQ",
+                      "members": [
+                        {
+                          "type": "STRING",
+                          "value": "^"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "exponent"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
             "type": "SEQ",
             "members": [
               {

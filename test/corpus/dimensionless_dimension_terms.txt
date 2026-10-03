@@ -1,0 +1,77 @@
+================================================================================
+Dimensionless is the identity term of compound dimension expressions
+================================================================================
+
+dim Rate = Dimensionless / Time;
+node rate: Dimensionless / Time = 0.5 Hz;
+node squared: Dimensionless^2 = 4.0;
+node speed: Length / (Time * Dimensionless) = 1.0 m / 1.0 s;
+node plain: Dimensionless = 1.0;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (dimension_declaration
+    (identifier)
+    (dim_expr
+      (dim_term
+        (dimensionless))
+      (dim_term
+        (ident_path
+          (identifier)))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (dimensionless))
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (quantity_literal
+      (number)
+      (unit_expr
+        (unit_term
+          (ident_path
+            (identifier))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (dimensionless)
+          (exponent
+            (signed_integer)))))
+    (number))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))
+        (dim_term
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier)))
+            (dim_term
+              (dimensionless))))))
+    (binary_expr
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier)))))
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier)))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (number)))

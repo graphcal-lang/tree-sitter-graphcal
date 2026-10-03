@@ -1015,8 +1015,12 @@ module.exports = grammar({
       repeat(seq(choice("*", "/"), $.dim_term)),
     )),
 
+    // `Dimensionless` is the identity dimension, so it may be a term of a
+    // compound dimension expression (`Dimensionless / Time`). A bare
+    // `Dimensionless` type stays the `dimensionless` type node.
     dim_term: $ => prec.right(PREC.POWER + 1, choice(
       seq($.ident_path, optional(seq("^", $.exponent))),
+      prec(-1, seq($.dimensionless, optional(seq("^", $.exponent)))),
       seq("(", $.dim_expr, ")", optional(seq("^", $.exponent))),
     )),
 
