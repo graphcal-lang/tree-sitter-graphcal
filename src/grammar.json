@@ -6187,6 +6187,10 @@
               "members": [
                 {
                   "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "SYMBOL",
                   "name": "graph_ref"
                 },
                 {
@@ -6513,8 +6517,12 @@
           "name": "qualified_variant"
         },
         {
-          "type": "SYMBOL",
-          "name": "ident_path"
+          "type": "PREC",
+          "value": 10,
+          "content": {
+            "type": "SYMBOL",
+            "name": "ident_path"
+          }
         },
         {
           "type": "SYMBOL",
@@ -7246,6 +7254,11 @@
     [
       "todo_hole",
       "identifier"
+    ],
+    [
+      "_primary_expr",
+      "fn_call",
+      "struct_construction"
     ]
   ],
   "precedences": [],
