@@ -63,6 +63,10 @@ module.exports = grammar({
     // `todo` is also an identifier: `todo < x` compares and `todo<T>(…)`
     // calls; only the `{` after the closing `>` commits to a hole.
     [$.todo_hole, $.identifier],
+    // A bare path before `<` may compare (`t < x`) or open a turbofish
+    // (`f<T>(…)`, `S<T>(f: …)`); the reduction ties with the turbofish shift
+    // so both readings fork, and only the call reading survives `>(`.
+    [$._primary_expr, $.fn_call, $.struct_construction],
   ],
 
   rules: {
@@ -1307,6 +1311,8 @@ module.exports = grammar({
 
     field_access: $ => prec.left(PREC.POSTFIX, seq(
       field("object", choice(
+        // A local's field (`q.x`); `q.r::x` stays a namespace path.
+        $.identifier,
         $.graph_ref,
         $.inline_dag_call,
         $.fn_call,
@@ -1391,7 +1397,7 @@ module.exports = grammar({
       $.map_literal,
       $.parenthesized_expr,
       $.qualified_variant,
-      $.ident_path,
+      prec(PREC.CALL, $.ident_path),
       $.todo_hole,
     ),
 

@@ -1340,6 +1340,10 @@
             "named": true
           },
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "index_access",
             "named": true
           },

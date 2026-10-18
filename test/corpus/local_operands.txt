@@ -1,0 +1,232 @@
+==================
+Bare-name comparisons
+==================
+node a: Bool = t < x;
+node b: Bool = for t: Step { t < @limit };
+node c: Bool = if a < x && b > y { true } else { false };
+node d: Bool = m::a < 1.0;
+node e: Bool = todo < x;
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (ident_path
+        (identifier))
+      (ident_path
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (for_expr
+      (for_binding
+        (identifier)
+        (ident_path
+          (identifier)))
+      (binary_expr
+        (ident_path
+          (identifier))
+        (graph_ref
+          (ident_path
+            (identifier))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (if_expr
+      (binary_expr
+        (binary_expr
+          (ident_path
+            (identifier))
+          (ident_path
+            (identifier)))
+        (binary_expr
+          (ident_path
+            (identifier))
+          (ident_path
+            (identifier))))
+      (brace_body
+        (boolean))
+      (brace_body
+        (boolean))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (ident_path
+        (namespace_path
+          (identifier))
+        (identifier))
+      (number)))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (ident_path
+        (identifier))
+      (ident_path
+        (identifier)))))
+
+==================
+Turbofish calls after a bare path
+==================
+node f: Length = f<Length>(1.0 m);
+node g: Pair = Pair<Length>(a: 1.0 m);
+node h: Length = m.n::f<T, N + 1>(1.0 m);
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (fn_call
+      (ident_path
+        (identifier))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier)))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (struct_construction
+      (ident_path
+        (identifier))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (field_init
+        (identifier)
+        (quantity_literal
+          (number)
+          (unit_expr
+            (unit_term
+              (ident_path
+                (identifier))))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (fn_call
+      (ident_path
+        (namespace_path
+          (identifier)
+          (identifier))
+        (identifier))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (generic_arg
+        (nat_add_expr
+          (identifier)
+          (nat_literal)))
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier))))))))
+
+==================
+Field access on a local
+==================
+node s: P[Step] = unfold(Step, @p, |q, prev_t, t| P(x: q.x + q.y, y: q.y));
+node c: Bool = q.r.x < x;
+node n: Length = m.n::a;
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier))))
+        (ident_path
+          (identifier))))
+    (unfold_expr
+      (ident_path
+        (identifier))
+      (graph_ref
+        (ident_path
+          (identifier)))
+      (identifier)
+      (identifier)
+      (identifier)
+      (struct_construction
+        (ident_path
+          (identifier))
+        (field_init
+          (identifier)
+          (binary_expr
+            (field_access
+              (identifier)
+              (identifier))
+            (field_access
+              (identifier)
+              (identifier))))
+        (field_init
+          (identifier)
+          (field_access
+            (identifier)
+            (identifier))))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (bool_type))
+    (binary_expr
+      (field_access
+        (field_access
+          (identifier)
+          (identifier))
+        (identifier))
+      (ident_path
+        (identifier))))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (ident_path
+      (namespace_path
+        (identifier)
+        (identifier))
+      (identifier))))
