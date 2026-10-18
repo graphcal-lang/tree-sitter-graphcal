@@ -1,7 +1,7 @@
 ==================
-TODO empty definition
+TODO empty hole
 ==================
-node missing: Length = todo {};
+node missing: Length = todo<Length> {};
 
 ---
 
@@ -13,12 +13,17 @@ node missing: Length = todo {};
         (dim_term
           (ident_path
             (identifier)))))
-    (todo_definition)))
+    (todo_hole
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier))))))))
 
 ==================
 TODO exhaustive dependency interface
 ==================
-pub node missing: Velocity = todo { @isp, @g0, @module.child::input, };
+pub node missing: Velocity = todo<Velocity> { @isp, @g0, @module.child::input, };
 
 ---
 
@@ -31,7 +36,12 @@ pub node missing: Velocity = todo { @isp, @g0, @module.child::input, };
         (dim_term
           (ident_path
             (identifier)))))
-    (todo_definition
+    (todo_hole
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
       (graph_ref
         (ident_path
           (identifier)))
@@ -44,6 +54,139 @@ pub node missing: Velocity = todo { @isp, @g0, @module.child::input, };
             (identifier)
             (identifier))
           (identifier))))))
+
+==================
+TODO hole inside an expression
+==================
+node total: Length = @a + todo<Length> { @b } * 2.0;
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (binary_expr
+      (graph_ref
+        (ident_path
+          (identifier)))
+      (binary_expr
+        (todo_hole
+          (type_expr
+            (dim_expr
+              (dim_term
+                (ident_path
+                  (identifier)))))
+          (graph_ref
+            (ident_path
+              (identifier))))
+        (number)))))
+
+==================
+TODO keyed interface entries and locals
+==================
+node state: Dimensionless[Step] = unfold(Step, todo<Dimensionless> { @initial }, |s, prev_t, t| todo<Dimensionless> { s, @action[prev_t], @grid[t, prev_t,] });
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dimensionless)
+        (ident_path
+          (identifier))))
+    (unfold_expr
+      (ident_path
+        (identifier))
+      (todo_hole
+        (type_expr
+          (dimensionless))
+        (graph_ref
+          (ident_path
+            (identifier))))
+      (identifier)
+      (identifier)
+      (identifier)
+      (todo_hole
+        (type_expr
+          (dimensionless))
+        (identifier)
+        (todo_element_read
+          (graph_ref
+            (ident_path
+              (identifier)))
+          (identifier))
+        (todo_element_read
+          (graph_ref
+            (ident_path
+              (identifier)))
+          (identifier)
+          (identifier))))))
+
+==================
+TODO indexed hole type
+==================
+node grid: Length[Axis] = todo<Length[Axis]> {};
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (indexed_type
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier))))
+        (ident_path
+          (identifier))))
+    (todo_hole
+      (type_expr
+        (indexed_type
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))
+          (ident_path
+            (identifier)))))))
+
+==================
+TODO turbofish call keeps todo an identifier
+==================
+node called: Length = todo<Length>(1.0 m);
+
+---
+
+(source_file
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dim_expr
+        (dim_term
+          (ident_path
+            (identifier)))))
+    (fn_call
+      (ident_path
+        (identifier))
+      (generic_arg
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
+      (quantity_literal
+        (number)
+        (unit_expr
+          (unit_term
+            (ident_path
+              (identifier))))))))
 
 ==================
 TODO contextual identifiers and ordinary constructor call
@@ -135,7 +278,7 @@ node copied: Length = @todo.child::input;
 ==================
 TODO comments and multiline dependencies
 ==================
-node missing: Length = todo // marker
+node missing: Length = todo<Length> // marker
 {
   // before
   @input, // after
@@ -151,7 +294,12 @@ node missing: Length = todo // marker
         (dim_term
           (ident_path
             (identifier)))))
-    (todo_definition
+    (todo_hole
+      (type_expr
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
       (line_comment)
       (line_comment)
       (graph_ref
