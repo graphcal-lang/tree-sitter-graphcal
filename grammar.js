@@ -60,6 +60,9 @@ module.exports = grammar({
     // The next token distinguishes a compound unit (`m / s`) from
     // quantity arithmetic (`1.0 m / 2.0 s`).
     [$.unit_expr],
+    // `todo` is also an identifier: `todo < x` compares and `todo<T>(…)`
+    // calls; only the `{` after the closing `>` commits to a hole.
+    [$.todo_hole, $.identifier],
   ],
 
   rules: {
@@ -149,30 +152,10 @@ module.exports = grammar({
     node_declaration: $ => seq(
       repeat($.attribute),
       optional($.visibility),
-      choice(
-        seq(
-          optional("const"), "node", field("name", $.identifier),
-          optional(seq(":", field("type", $.type_expr))),
-          "=", field("value", $._expr),
-        ),
-        seq(
-          "node", field("name", $.identifier),
-          ":", field("type", $.type_expr),
-          "=", field("value", $.todo_definition),
-        ),
-      ),
+      optional("const"), "node", field("name", $.identifier),
+      optional(seq(":", field("type", $.type_expr))),
+      "=", field("value", $._expr),
       ";",
-    ),
-
-    // A whole-node definition, not an expression or an ordinary call.
-    todo_definition: $ => seq(
-      "todo", "{",
-      optional(seq(
-        field("dependency", $.graph_ref),
-        repeat(seq(",", field("dependency", $.graph_ref))),
-        optional(","),
-      )),
-      "}",
     ),
 
     // Multi-declaration (issue #481): introduce N parallel
@@ -1409,6 +1392,39 @@ module.exports = grammar({
       $.parenthesized_expr,
       $.qualified_variant,
       $.ident_path,
+      $.todo_hole,
+    ),
+
+    // Typed hole: `todo<Length> { @a, @b[t], s }`. The type is mandatory and
+    // the braces list the exhaustive direct dependencies of the unfinished
+    // part. Only `todo < … > {` commits to a hole; elsewhere `todo` is an
+    // ordinary identifier (`todo < x`, `todo<T>(…)`).
+    todo_hole: $ => prec(PREC.CALL, prec.dynamic(3, seq(
+      "todo", "<",
+      field("type", $.type_expr),
+      ">", "{",
+      optional(seq(
+        field("dependency", $._todo_dependency),
+        repeat(seq(",", field("dependency", $._todo_dependency))),
+        optional(","),
+      )),
+      "}",
+    ))),
+
+    // A read `@y`, an element read `@y[t, …]` keyed by locals, or a local.
+    _todo_dependency: $ => choice(
+      $.graph_ref,
+      $.todo_element_read,
+      $.identifier,
+    ),
+
+    todo_element_read: $ => seq(
+      field("target", $.graph_ref),
+      "[",
+      field("key", $.identifier),
+      repeat(seq(",", field("key", $.identifier))),
+      optional(","),
+      "]",
     ),
 
     // Quantity literal: 400 km, 9.80665 m/s^2
@@ -1533,7 +1549,9 @@ module.exports = grammar({
 
     // The lexical word stays separate from the source identifier so the
     // contextual marker remains a valid name, including immediately after `=`.
-    identifier: $ => choice($._identifier, "todo"),
+    // Its precedence ties with the `todo_hole` shift of `<`, so the declared
+    // conflict forks and the token after `>` decides (`{` hole, `(` call).
+    identifier: $ => choice($._identifier, prec(PREC.CALL, "todo")),
     _identifier: $ => /[a-zA-Z][a-zA-Z0-9_]*/,
 
     line_comment: $ => token(seq("//", /.*/)),
