@@ -168,7 +168,7 @@ importers:
     dependencies:
       nan:
         specifier: ^2.20.0
-        version: 2.29.0
+        version: 2.30.0
     devDependencies:
       tree-sitter-cli:
         specifier: 0.27.1
@@ -176,8 +176,8 @@ importers:
 
 packages:
 
-  nan@2.29.0:
-    resolution: {integrity: sha512-GlGk3HIvitbvs+LT3g6XUP1kpirKNvmDFwF/bmo6XNWSb/eYEs/O4bfgIEIXCZ+lIOTS5xNwDvSGMw6FJdAhtA==}
+  nan@2.30.0:
+    resolution: {integrity: sha512-P5mokDkSvCGBz6mZDD/2l+w9QoICRXdCyZ9ONGmTePr40oihJg3Kpn0YU3twKd6PJnwSlLBWNQeOT6yWEV2c4A==}
 
   tree-sitter-cli@0.27.1:
     resolution: {integrity: sha512-WFPEjxwscCjZP9uYj0rxT2TyGBkDcXUkGTthrMpxZFGvzXEYsbC3J0633Ps8dd2mMsdsbU8oVwmQ148lLHI7Xw==}
@@ -186,6 +186,6 @@ packages:
 
 snapshots:
 
-  nan@2.29.0: {}
+  nan@2.30.0: {}
 
   tree-sitter-cli@0.27.1: {}
