@@ -6,6 +6,7 @@ workflows:
     '.github/workflows/ci.yaml':
         - 'actions/checkout@v7.0.1'
         - 'crate-ci/typos@v1.51.1'
+        - 'j178/prek-action@v3.1.0'
         - 'voidzero-dev/setup-vp@v1.22.0'
 dependencies:
     'actions/checkout@v7.0.1':
@@ -18,6 +19,11 @@ dependencies:
         commit: 'sha1-7f9d0819ca1c008ade73f4b41fa9d258d48f605b'
         owner_id: 36412122
         repo_id: 181782286
+    'j178/prek-action@v3.1.0':
+        ref: 'v3.1.0'
+        commit: 'sha1-44924fe9ef4a6f88253c4b6b1bf11c689d3ce53d'
+        owner_id: 10510431
+        repo_id: 1052387486
     'voidzero-dev/setup-vp@v1.22.0':
         ref: 'v1.22.0'
         commit: 'sha1-cab1ab9eaff52d4857875f4f2c016e36af8f2c76'
