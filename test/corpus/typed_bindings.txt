@@ -1,0 +1,137 @@
+================================================================================
+Marked DAG bindings parse their value with the marker's grammar
+================================================================================
+
+include lib.model(
+    type T: Vec3<Length, Eci>,
+    dim D: Length / Time,
+    index I: Fin(3),
+    x: @y,
+) as m;
+
+node v: Dimensionless = @lib.model(type T: Mass(min: 0 kg), index I: Phase)::out;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (include_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (include_param_bindings
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (type_expr
+          (type_application
+            (ident_path
+              (identifier))
+            (generic_arg
+              (type_expr
+                (dim_expr
+                  (dim_term
+                    (ident_path
+                      (identifier))))))
+            (generic_arg
+              (type_expr
+                (dim_expr
+                  (dim_term
+                    (ident_path
+                      (identifier)))))))))
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))
+          (dim_term
+            (ident_path
+              (identifier)))))
+      (include_param_binding
+        (input_binding_category)
+        (identifier)
+        (finite_index
+          (nat_literal)))
+      (include_param_binding
+        (identifier)
+        (graph_ref
+          (ident_path
+            (identifier)))))
+    (identifier))
+  (node_declaration
+    (identifier)
+    (type_expr
+      (dimensionless))
+    (inline_dag_call
+      (dag_call_path
+        (identifier)
+        (identifier))
+      (include_param_bindings
+        (include_param_binding
+          (input_binding_category)
+          (identifier)
+          (type_expr
+            (constrained_type
+              (dim_expr
+                (dim_term
+                  (ident_path
+                    (identifier))))
+              (type_constraints
+                (type_constraint
+                  (domain_bound_key)
+                  (quantity_literal
+                    (number)
+                    (unit_expr
+                      (unit_term
+                        (ident_path
+                          (identifier))))))))))
+        (include_param_binding
+          (input_binding_category)
+          (identifier)
+          (ident_path
+            (identifier))))
+      (identifier))))
+
+================================================================================
+A marked index binding rejects a value expression
+================================================================================
+
+include lib.model(index I: 1 + 2);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (include_declaration
+    (module_path
+      (identifier)
+      (identifier))
+    (include_param_bindings
+      (ERROR
+        (identifier)
+        (nat_literal)))))
+
+================================================================================
+A param declaration requires a type annotation
+================================================================================
+
+param x = 1;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (ERROR
+    (identifier)))
+
+================================================================================
+A node declaration requires a type annotation
+================================================================================
+
+node y = 2;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (ERROR
+    (identifier)
+    (nat_literal)))

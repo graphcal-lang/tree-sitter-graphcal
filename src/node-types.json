@@ -2543,7 +2543,15 @@
             "named": true
           },
           {
+            "type": "dim_expr",
+            "named": true
+          },
+          {
             "type": "field_access",
+            "named": true
+          },
+          {
+            "type": "finite_index",
             "named": true
           },
           {
@@ -2620,6 +2628,10 @@
           },
           {
             "type": "todo_hole",
+            "named": true
+          },
+          {
+            "type": "type_expr",
             "named": true
           },
           {
@@ -3363,11 +3375,6 @@
         ]
       }
     }
-  },
-  {
-    "type": "input_binding_category",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "key_form_expr",
@@ -4610,7 +4617,7 @@
       },
       "type": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "type_expr",
@@ -4756,7 +4763,7 @@
       },
       "type": {
         "multiple": false,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "type_expr",
@@ -7570,6 +7577,10 @@
   {
     "type": "index",
     "named": false
+  },
+  {
+    "type": "input_binding_category",
+    "named": true
   },
   {
     "type": "int_type",

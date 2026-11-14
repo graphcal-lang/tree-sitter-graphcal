@@ -146,7 +146,7 @@ module.exports = grammar({
       optional($.visibility),
       "param",
       field("name", $.identifier),
-      optional(seq(":", field("type", $.type_expr))),
+      ":", field("type", $.type_expr),
       optional(seq("=", field("value", $._expr))),
       ";",
     ),
@@ -157,7 +157,7 @@ module.exports = grammar({
       repeat($.attribute),
       optional($.visibility),
       optional("const"), "node", field("name", $.identifier),
-      optional(seq(":", field("type", $.type_expr))),
+      ":", field("type", $.type_expr),
       "=", field("value", $._expr),
       ";",
     ),
@@ -574,7 +574,8 @@ module.exports = grammar({
     ),
 
     // DAG input bindings: unmarked means param; Static inputs require an
-    // explicit `type`, `dim`, or `index` marker.
+    // explicit `type`, `dim`, or `index` marker, which selects the grammar
+    // of the bound value (type, dimension, or index expression).
     // The list may be empty: `include foo();` is valid (matches the
     // EBNF `[ include_param_binding, { ",", ... }, [ "," ] ]`).
     include_param_bindings: $ => seq(
@@ -587,14 +588,27 @@ module.exports = grammar({
       ")",
     ),
 
-    include_param_binding: $ => seq(
-      optional(field("category", $.input_binding_category)),
-      field("name", $.identifier),
-      ":",
-      field("value", $._expr),
+    include_param_binding: $ => choice(
+      seq(field("name", $.identifier), ":", field("value", $._expr)),
+      seq(
+        field("category", alias("type", $.input_binding_category)),
+        field("name", $.identifier),
+        ":",
+        field("value", $.type_expr),
+      ),
+      seq(
+        field("category", alias("dim", $.input_binding_category)),
+        field("name", $.identifier),
+        ":",
+        field("value", $.dim_expr),
+      ),
+      seq(
+        field("category", alias("index", $.input_binding_category)),
+        field("name", $.identifier),
+        ":",
+        field("value", $._index_expr),
+      ),
     ),
-
-    input_binding_category: _ => choice("type", "dim", "index"),
 
     // dag name { declarations... }
     dag_declaration: $ => seq(

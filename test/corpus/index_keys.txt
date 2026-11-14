@@ -368,7 +368,5 @@ node k: Key = 1;
 --------------------------------------------------------------------------------
 
 (source_file
-  (node_declaration
-    (identifier)
-    (ERROR)
-    (number)))
+  (ERROR
+    (identifier)))
