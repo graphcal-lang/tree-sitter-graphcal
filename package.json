@@ -1,6 +1,6 @@
 {
   "name": "tree-sitter-graphcal",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Tree-sitter grammar for Graphcal (.gcl)",
   "keywords": [
     "graphcal",
