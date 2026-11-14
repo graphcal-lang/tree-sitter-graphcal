@@ -250,6 +250,11 @@
 
 ; DAG input bindings: unmarked params or explicitly marked Static inputs.
 (include_param_binding category: (input_binding_category) @keyword)
+; A marked `index` binding's bare value names an index (type and dim
+; values are type_expr/dim_expr and are covered by the type rules).
+(include_param_binding
+  category: (input_binding_category)
+  value: (ident_path (identifier) @type))
 (include_param_binding name: (identifier) @variable)
 (include_param_binding ":" @operator)
 

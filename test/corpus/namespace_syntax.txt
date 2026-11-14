@@ -86,13 +86,18 @@ node called: Dimensionless = @lib.child(input: @input)::out;
       (include_param_binding
         (input_binding_category)
         (identifier)
-        (ident_path
-          (identifier)))
+        (type_expr
+          (dim_expr
+            (dim_term
+              (ident_path
+                (identifier))))))
       (include_param_binding
         (input_binding_category)
         (identifier)
-        (ident_path
-          (identifier)))
+        (dim_expr
+          (dim_term
+            (ident_path
+              (identifier)))))
       (include_param_binding
         (input_binding_category)
         (identifier)
