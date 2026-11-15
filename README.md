@@ -37,7 +37,7 @@ This matches the JavaScript toolchain, not the host OS or C compiler. Corpus tes
 vp run generate
 ```
 
-`vp pm ci` runs a frozen-lockfile pnpm install from `pnpm-lock.yaml`. pnpm blocks dependency build scripts unless they are approved, so the Tree-sitter CLI's reviewed install script is explicitly allowed under `allowBuilds` in `pnpm-workspace.yaml` so it can download its executable. When updating Tree-sitter, review the new install script and update its version-specific entry in `allowBuilds` (or run `vp pm approve-builds`), then rerun `vp pm ci`. Do not approve all dependencies indiscriminately.
+`vp pm ci` runs a frozen-lockfile pnpm install from `pnpm-lock.yaml`. pnpm blocks dependency build scripts unless they are approved, so the Tree-sitter CLI's install script is explicitly allowed under `allowBuilds` in `pnpm-workspace.yaml` so it can download its executable. The entry is not tied to a version: the exact package contents are already pinned by the integrity hash in `pnpm-lock.yaml`, so Tree-sitter updates need no change here. Do not approve all dependencies indiscriminately.
 
 The `generate` script runs `tree-sitter generate` using `grammar.js` and updates the generated files in `src/`:
 

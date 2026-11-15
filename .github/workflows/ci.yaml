@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  VP_VERSION: "1.4.0"
+  VP_VERSION: "1.5.0"
 
 jobs:
   typos:
@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: crate-ci/typos@v1.51.1
+      - uses: crate-ci/typos@v1.52.0
 
   tree_sitter:
     runs-on: ubuntu-latest
